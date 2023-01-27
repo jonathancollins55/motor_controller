@@ -10,6 +10,11 @@ byte_two = bytes.fromhex('64')
 send_bytes = bytearray([byte_one,byte_two])
 stop_command = bytes.fromhex('FF')
 
+
+def stop_motor():
+    cmd = bytes.fromhex('FF')
+    ser.write(cmd)
+
 ser.write(send_bytes)
 time.sleep(5)
-ser.write(stop_command)
+stop_motor()
