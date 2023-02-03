@@ -2,7 +2,7 @@ import board
 import busio
 import time
 
-uart = busio.UART(board.TX,board.RX,buadrate=9600)
+uart = busio.UART(board.TX,board.RX,baudrate=9600)
 
 byte_one = bytes.fromhex('DD')
 byte_two = bytes.fromhex('64')
