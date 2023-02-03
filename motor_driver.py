@@ -7,7 +7,7 @@ ser = serial.Serial(device,9600,timeout=5)
 
 byte_one = bytes.fromhex('DD')
 byte_two = bytes.fromhex('64')
-send_bytes = bytearray([byte_one,byte_two])
+send_bytes = bytearray([221,100])
 stop_command = bytes.fromhex('FF')
 
 
@@ -16,5 +16,5 @@ def stop_motor():
     ser.write(cmd)
 
 ser.write(send_bytes)
-time.sleep(5)
-stop_motor()
+# time.sleep(5)
+# stop_motor()
