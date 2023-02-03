@@ -14,7 +14,7 @@ i2c = busio.I2C(board.SCL,board.SDA)
 
 byte_one = bytes.fromhex('DD')
 byte_two = bytes.fromhex('64')
-send_bytes = bytearray([byte_one,byte_two])
+send_bytes = bytearray([221,100])
 stop_command = bytes.fromhex('FF')
 
 
