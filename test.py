@@ -1,6 +1,7 @@
 import lgpio
 # import RPi.GPIO as gpio
 import time
+import threading
 
 MOTOR = 12
 FREQ = 50
@@ -18,7 +19,10 @@ def main():
 
     time.sleep(5)
 
-    testMotorMovement()
+    t = threading.Thread(target=testMotorMovement)
+    t.start()
+
+    time.sleep(5)
 
     #accelerate()
 
@@ -40,7 +44,6 @@ def manualMove():
 def testMotorMovement():
     print("Frequency 1")
     lgpio.tx_pwm(h, MOTOR, FREQ, 10)    #May need to put this on a separate thread.
-    time.sleep(8)
 
     # print("Frequency 2")
     # lgpio.tx_pwm(h, MOTOR, FREQ, 9)
