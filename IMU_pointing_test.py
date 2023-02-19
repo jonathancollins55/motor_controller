@@ -15,7 +15,7 @@ def main():
 
     while(True):
         try:
-            current_position = get_position(bno=bno)
+            current_position = get_pointing_3D(bno=bno)
             print(current_position)
             time.sleep(1)
         except KeyboardInterrupt:
@@ -23,8 +23,11 @@ def main():
             print("Program terminated")
             break
 
-def get_position(bno):
+def get_pointing(bno):
     return bno.read_euler()[axis]
+
+def get_pointing_3D(bno):
+    return [bno.read_euler()[axis],bno.read_euler()[1],bno.read_euler()[2]]
 
 def setup():
     i2c = I2C
