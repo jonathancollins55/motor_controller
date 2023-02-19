@@ -11,11 +11,15 @@ kp = 1
 ki = 1
 kd = 1
 
+prevT = 0
+eprev = 0
+eintegral = 0
+
 ###################################
 # Other Variables
 ###################################
 axis = 0                #Axis to slew on
-target_position = 90    #relative target position (in degrees clockwise)
+target_position = 10    #relative target position (in degrees clockwise)
 AXIS_REMAP_X = 0x00
 AXIS_REMAP_Y = 0x01
 AXIS_REMAP_Z = 0x02
@@ -35,17 +39,43 @@ def main():
     current_position = 0
 
     motor, bno = setup()
-    adjusted_target_position = get_target_position(bno=bno)
+    target_position = get_target_position(bno=bno)
+
+    print("target position is:",target_position)
+    time.sleep(2)
+    print("Starting control")
 
     while(True):
         try:
-            current_position = get_position(bno=bno)
-            print(get_error(adjusted_target_position,current_position))
-            print("Adjusted target position:",adjusted_target_position)
-            time.sleep(1)
+            #time difference
+            currT = time.time_ns()
+            deltaT = currT-prevT/1.0e9
+            prevT = currT
+
+            #error
+            current_position = get_position()
+            e = target_position-current_position
+
+            dedt = (e-eprev)/deltaT
+            eintegral = eintegral + e*deltaT
+
+            #Control signal
+            if (e < 1):
+                u = 0
+            else:
+                u = kp*e + kd*dedt + ki*eintegral
+                print("Error:",e,"Control_Signal:",u)
+            
+            pwm = abs(u)
+            if (pwm > 9):
+                pwm = 9
+
+            set_motor(motor,pwm)
+
         except KeyboardInterrupt:
             print()
-            print("Program terminated")
+            print("Terminating Program...")
+            time.sleep(1)
             stop_motor(motor)
             break
 
@@ -79,6 +109,19 @@ def get_target_position(bno):
 def get_error(target_position,current_position):
     return target_position-current_position
 
+########################################## 
+# Sets speed of motor as a pwm signal (5-10% duty cycle)
+# Inputs: Motor instance, pwm value
+# Outputs: N/A
+##########################################
+def set_motor(self, pwm_val):
+    lgpio.tx_pwm(self, MOTOR, FREQ, pwm_val)
+
+########################################## 
+# Setup function to intialize IMU and motor
+# Inputs: N/A
+# Outputs: Motor instance, IMU instance
+##########################################
 def setup():
     i2c = I2C
     bno = BNO055.BNO055(i2c=i2c)
@@ -93,24 +136,24 @@ def setup():
 
 ########################################## 
 # Stops the motor. Must be run at end of program
-# Inputs: N/A
+# Inputs: Motor instance
 # Outputs: N/A
 ##########################################
-def stop_motor(h):
+def stop_motor(self):
     print("Stopping motor")
-    lgpio.tx_pwm(h, MOTOR, FREQ, MIN_SIGNAL)
+    lgpio.tx_pwm(self, MOTOR, FREQ, MIN_SIGNAL)
     time.sleep(10)
-    lgpio.gpio_write(h, MOTOR, 0)
-    lgpio.gpiochip_close(h)
+    lgpio.gpio_write(self, MOTOR, 0)
+    lgpio.gpiochip_close(self)
 
 ########################################## 
 # Arms the motor. Must be run before powering the motor
 # Inputs: handle to gpio chip device (h)
 # Outputs: N/A
 ##########################################
-def arm(h):
+def arm(self):
     print("Sending minimum output")
-    lgpio.tx_pwm(h, MOTOR, FREQ, MIN_SIGNAL)
+    lgpio.tx_pwm(self, MOTOR, FREQ, MIN_SIGNAL)
     turn_on_power = input("Turn on power source and press any key")
     time.sleep(3)
 
