@@ -47,6 +47,7 @@ def main():
     time.sleep(3)
 
     while(True):
+        prevT = 0
         try:
             #time difference
             currT = time.time_ns()
