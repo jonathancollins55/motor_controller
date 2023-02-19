@@ -44,6 +44,7 @@ def main():
     print("target position is:",target_position)
     time.sleep(2)
     print("Starting control")
+    time.sleep(3)
 
     while(True):
         try:
