@@ -37,6 +37,33 @@ STEP_SIZE = .2
 # Outputs: None
 ##########################################
 def main():
+    ###################################
+    # Variables - Controller
+    ###################################
+    kp = 1
+    ki = 1
+    kd = 1
+
+    prevT = 0
+    eprev = 0
+    eintegral = 0
+    pwm_prev = 5
+
+    ###################################
+    # Other Variables
+    ###################################
+    axis = 0                #Axis to slew on
+    target_position = 10    #relative target position (in degrees clockwise)
+    AXIS_REMAP_X = 0x00
+    AXIS_REMAP_Y = 0x01
+    AXIS_REMAP_Z = 0x02
+
+    MOTOR = 12
+    FREQ = 50
+    MAX_SIGNAL = 10
+    MIN_SIGNAL = 5
+    STEP_SIZE = .2
+
     current_position = 0
 
     motor, bno = setup()
