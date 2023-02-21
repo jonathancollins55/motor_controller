@@ -104,7 +104,7 @@ def main():
             if (u == 0):
                 pwm = pwm_prev
                 print("Error < 1")
-            elif (u > 0):
+            elif (u < 0):
                 pwm = pwm_prev + STEP_SIZE
                 print("Error > 1")
             else:
