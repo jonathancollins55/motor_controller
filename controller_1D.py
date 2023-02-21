@@ -14,6 +14,7 @@ kd = 1
 prevT = 0
 eprev = 0
 eintegral = 0
+pwm_prev = 5
 
 ###################################
 # Other Variables
@@ -28,7 +29,7 @@ MOTOR = 12
 FREQ = 50
 MAX_SIGNAL = 10
 MIN_SIGNAL = 5
-STEP_SIZE = .5
+STEP_SIZE = .2
 
 ########################################## 
 # Main Function
@@ -55,7 +56,7 @@ def main():
             prevT = currT
 
             #error
-            current_position = get_position()
+            current_position = get_position(bno)
             e = target_position-current_position
 
             dedt = (e-eprev)/deltaT
@@ -68,11 +69,18 @@ def main():
                 u = kp*e + kd*dedt + ki*eintegral
                 print("Error:",e,"Control_Signal:",u)
             
-            pwm = abs(u)
-            if (pwm > 9):
-                pwm = 9
+            if ((pwm > 5) and (pwm < 10)):
+                if (u > 0):
+                    pwm = pwm_prev + STEP_SIZE
+                else:
+                    pwm = pwm_prev - STEP_SIZE
+            else:
+                print("PWM OUT OF RANGE")
+                print("Setting PWM to minimum")
+                pwm = 5
 
             set_motor(motor,pwm)
+            pwm_prev = pwm
 
         except KeyboardInterrupt:
             print()
