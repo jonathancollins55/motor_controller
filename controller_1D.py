@@ -41,8 +41,8 @@ def main():
     # Variables - Controller
     ###################################
     kp = 1
-    ki = 1
-    kd = 1
+    ki = 0
+    kd = 0
 
     prevT = 0
     eprev = 0
