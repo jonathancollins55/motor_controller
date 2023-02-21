@@ -96,15 +96,22 @@ def main():
                 u = kp*e + kd*dedt + ki*eintegral
                 print("Error:",e,"Control_Signal:",u)
             
-            if ((pwm > 5) and (pwm < 10)):
-                if (u > 0):
-                    pwm = pwm_prev + STEP_SIZE
-                else:
-                    pwm = pwm_prev - STEP_SIZE
+            u_mag = abs(u)
+            if (u_mag == 0):
+                pwm = pwm_prev
+            elif (u_mag > 0):
+                pwm = pwm_prev + STEP_SIZE
             else:
+                pwm = pwm_prev - STEP_SIZE
+
+            if (pwm < 5 or pwm > 10):
                 print("PWM OUT OF RANGE")
-                print("Setting PWM to minimum")
-                pwm = 5
+                print("Setting PWM to previous value")
+                pwm = pwm_prev
+                time.sleep(1)
+                print("Target unreachable")
+                print("You might want to stop now")
+                time.sleep(2)
 
             set_motor(motor,pwm)
             pwm_prev = pwm
