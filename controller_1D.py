@@ -113,6 +113,7 @@ def main():
                 print("You might want to stop now")
                 time.sleep(2)
 
+            time.sleep(2)
             set_motor(motor,pwm)
             pwm_prev = pwm
 
