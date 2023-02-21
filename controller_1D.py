@@ -53,7 +53,7 @@ def main():
     # Other Variables
     ###################################
     axis = 0                #Axis to slew on
-    target_position = -10    #relative target position (in degrees clockwise) (Must be negative for unidirectional motor)
+    #target_position = -10    #relative target position (in degrees clockwise) (Must be negative for unidirectional motor)
     AXIS_REMAP_X = 0x00
     AXIS_REMAP_Y = 0x01
     AXIS_REMAP_Z = 0x02
