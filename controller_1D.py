@@ -62,7 +62,7 @@ def main():
     FREQ = 50
     MAX_SIGNAL = 10
     MIN_SIGNAL = 5
-    STEP_SIZE = .2
+    STEP_SIZE = .1
 
     current_position = 0
 
@@ -175,8 +175,17 @@ def setup():
     i2c = I2C
     bno = BNO055.BNO055(i2c=i2c)
     bno.begin()
+    #calibrate_sensor(bno=bno)
+
+    #Read calibration data from file
+    file = open("calibration_data.txt")
+    calibration_data = file.read(22)
+    bno.set_calibration(calibration_data)
+    file.close()
+
     calibrate_sensor(bno=bno)
-    
+    print("Successfully automated calibration!!")
+    time.sleep(1)
 
     h = lgpio.gpiochip_open(0)
     arm(h)
