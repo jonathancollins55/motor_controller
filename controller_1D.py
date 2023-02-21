@@ -21,7 +21,7 @@ pwm_prev = 5
 # Other Variables
 ###################################
 axis = 0                #Axis to slew on
-target_position = -10    #relative target position (in degrees clockwise)
+target_position = -30    #relative target position (in degrees clockwise)
 AXIS_REMAP_X = 0x00
 AXIS_REMAP_Y = 0x01
 AXIS_REMAP_Z = 0x02
@@ -108,7 +108,8 @@ def main():
                 pwm = pwm_prev + STEP_SIZE
                 print("Error > 1")
             else:
-                pwm = pwm_prev - STEP_SIZE
+                #pwm = pwm_prev - STEP_SIZE
+                pwm = MIN_SIGNAL
                 print("Error < -1")
 
             if (pwm < 5 or pwm > 10):
