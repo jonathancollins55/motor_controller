@@ -90,7 +90,7 @@ def main():
             eintegral = eintegral + e*deltaT
 
             #Control signal
-            if (e < 1):
+            if (abs(e) < 1):
                 u = 0
             else:
                 u = kp*e + kd*dedt + ki*eintegral
