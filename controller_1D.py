@@ -79,7 +79,7 @@ def main():
         try:
             #time difference
             currT = time.time_ns()
-            deltaT = currT-prevT/1.0e9
+            deltaT = currT-prevT/1.0e9  #CHANGE 1nS TO TIME DELAY USED BELOW
             prevT = currT
 
             #error
@@ -117,7 +117,7 @@ def main():
                 time.sleep(2)
 
             print("PWM value is:",pwm)
-            time.sleep(3)
+            time.sleep(4)
             set_motor(motor,pwm)
             pwm_prev = pwm
 
