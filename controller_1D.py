@@ -3,6 +3,7 @@ from Adafruit_BNO055 import BNO055
 import Adafruit_GPIO.I2C as I2C
 import lgpio
 import time
+import csv
 
 ###################################
 # Variables - Controller
@@ -47,7 +48,7 @@ def main():
     prevT = 0
     eprev = 0
     eintegral = 0
-    pwm_prev = 5
+    pwm_prev = 5.3
 
     ###################################
     # Other Variables
@@ -74,6 +75,9 @@ def main():
     print("Starting control")
     time.sleep(3)
 
+    #FOR ERROR PLOTTING
+    e_plot = []
+
     while(True):
         prevT = 0
         try:
@@ -88,6 +92,7 @@ def main():
 
             dedt = (e-eprev)/deltaT
             eintegral = eintegral + e*deltaT
+            e_plot.append(e)
 
             #Control signal
             if (abs(e) < 1):
@@ -126,6 +131,13 @@ def main():
             print("Terminating Program...")
             time.sleep(1)
             stop_motor(motor)
+
+            # writing the data into the file
+            file = open('e_plot.csv', 'w+', newline ='')            
+            with file:   
+                write = csv.writer(file)
+                write.writerows(e_plot)
+
             break
 
 ########################################## 
