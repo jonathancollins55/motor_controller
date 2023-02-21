@@ -101,11 +101,10 @@ def main():
                 u = kp*e + kd*dedt + ki*eintegral
                 print("Error:",e,"Control_Signal:",u)
             
-            u_mag = abs(u)
-            if (u_mag == 0):
+            if (u == 0):
                 pwm = pwm_prev
                 print("Error < 1")
-            elif (u_mag > 0):
+            elif (u > 0):
                 pwm = pwm_prev + STEP_SIZE
                 print("Error > 1")
             else:
@@ -136,7 +135,8 @@ def main():
             file = open('e_plot.csv', 'w+', newline ='')            
             with file:   
                 write = csv.writer(file)
-                write.writerows(e_plot)
+                #write.writerows(e_plot)
+                write.writerows(map(lambda x: [x], e_plot))
 
             break
 
