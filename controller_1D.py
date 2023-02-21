@@ -99,10 +99,13 @@ def main():
             u_mag = abs(u)
             if (u_mag == 0):
                 pwm = pwm_prev
+                print("Error < 1")
             elif (u_mag > 0):
                 pwm = pwm_prev + STEP_SIZE
+                print("Error > 1")
             else:
                 pwm = pwm_prev - STEP_SIZE
+                print("Error < -1")
 
             if (pwm < 5 or pwm > 10):
                 print("PWM OUT OF RANGE")
@@ -113,7 +116,8 @@ def main():
                 print("You might want to stop now")
                 time.sleep(2)
 
-            time.sleep(5)
+            print("PWM value is:",pwm)
+            time.sleep(3)
             set_motor(motor,pwm)
             pwm_prev = pwm
 
