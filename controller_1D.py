@@ -117,7 +117,7 @@ def main():
                 time.sleep(2)
 
             print("PWM value is:",pwm)
-            time.sleep(4)
+            time.sleep(10)
             set_motor(motor,pwm)
             pwm_prev = pwm
 
