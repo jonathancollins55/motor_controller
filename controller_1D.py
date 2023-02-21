@@ -85,6 +85,9 @@ def main():
             #error
             current_position = get_position(bno)
             e = target_position-current_position
+            print("Error:",e)
+            print("Target pos:",target_position,"Current pos:",current_position)
+            time.sleep(2)
 
             # dedt = (e-eprev)/deltaT
             # eintegral = eintegral + e*deltaT
