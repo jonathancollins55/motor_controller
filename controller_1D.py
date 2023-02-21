@@ -63,7 +63,7 @@ def main():
     FREQ = 50
     MAX_SIGNAL = 10
     MIN_SIGNAL = 5
-    STEP_SIZE = .05
+    STEP_SIZE = .025
 
     current_position = 0
 
