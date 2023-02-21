@@ -178,7 +178,7 @@ def setup():
     #calibrate_sensor(bno=bno)
 
     #Read calibration data from file
-    file = open("calibration_data.txt")
+    file = open("calibration_data.txt",'rb')
     calibration_data = file.read(22)
     bno.set_calibration(calibration_data)
     file.close()
