@@ -122,8 +122,9 @@ def main():
                 time.sleep(2)
 
             print("PWM value is:",pwm)
+            print("Gyroscope value", bno.read_gyroscope()[axis])
             time.sleep(10)
-            set_motor(motor,pwm)
+            set_motor(motor,pwm)    #Put in await function. Continuously monitor error and change PID vals, but slowly change PWM
             pwm_prev = pwm
 
         except KeyboardInterrupt:
