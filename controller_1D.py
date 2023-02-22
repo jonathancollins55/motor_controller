@@ -49,7 +49,7 @@ def main():
     eprev = 0
     eintegral = 0
     pwm_prev = 5.3
-    MAXIMUM_ERROR = 15
+    MAXIMUM_ERROR = 5
 
     ###################################
     # Other Variables
