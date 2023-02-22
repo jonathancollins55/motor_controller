@@ -108,14 +108,14 @@ def main():
                 u = kp*e + kd*dedt + ki*eintegral
                 print("Error:",e,"Control_Signal:",u)
             
-            if (u == 0):
-                pwm = MIN_SIGNAL
+            if (u > 0):
+                pwm = pwm_prev - 2*STEP_SIZE
+                #pwm = pwm_prev - 2*STEP_SIZE
                 print("Error < 1")
             elif (u < 0):
                 pwm = pwm_prev + STEP_SIZE
                 print("Error > 1")
             else:
-                #pwm = pwm_prev - STEP_SIZE
                 pwm = MIN_SIGNAL
                 print("Error < -1")
 
