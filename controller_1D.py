@@ -49,6 +49,7 @@ def main():
     eprev = 0
     eintegral = 0
     pwm_prev = 5.3
+    MAXIMUM_ERROR = 5
 
     ###################################
     # Other Variables
@@ -95,7 +96,7 @@ def main():
             e_plot.append(e)
 
             #Control signal
-            if (abs(e) < 1):
+            if (abs(e) < MAXIMUM_ERROR):
                 u = 0
             else:
                 u = kp*e + kd*dedt + ki*eintegral
