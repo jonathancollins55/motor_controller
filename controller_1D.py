@@ -49,7 +49,7 @@ def main():
     eprev = 0
     eintegral = 0
     pwm_prev = 5.3
-    MAXIMUM_ERROR = 10
+    MAXIMUM_ERROR = 15
 
     ###################################
     # Other Variables
@@ -103,7 +103,7 @@ def main():
                 print("Error:",e,"Control_Signal:",u)
             
             if (u == 0):
-                pwm = pwm_prev
+                pwm = MIN_SIGNAL
                 print("Error < 1")
             elif (u < 0):
                 pwm = pwm_prev + STEP_SIZE
