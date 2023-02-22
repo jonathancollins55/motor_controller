@@ -98,6 +98,7 @@ def main():
             #Control signal
             if (abs(e) < MAXIMUM_ERROR):
                 u = 0
+                print("Error:",e,"Control_Signal:",u)
             else:
                 u = kp*e + kd*dedt + ki*eintegral
                 print("Error:",e,"Control_Signal:",u)
