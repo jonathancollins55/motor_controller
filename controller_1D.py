@@ -4,6 +4,7 @@ import Adafruit_GPIO.I2C as I2C
 import lgpio
 import time
 import csv
+import matplotlib.pyplot as plt
 
 ###################################
 # Variables - Controller
@@ -77,7 +78,8 @@ def main():
     time.sleep(3)
 
     #FOR ERROR PLOTTING
-    e_plot = []
+    plot = [[],[]]
+    TIME_START = time.time()
 
     while(True):
         prevT = 0
@@ -93,7 +95,10 @@ def main():
 
             dedt = (e-eprev)/deltaT
             eintegral = eintegral + e*deltaT
-            e_plot.append(e)
+            
+            #Plotting
+            plot[0].append(time.time()-TIME_START)
+            plot[1].append(e)
 
             #Control signal
             if (abs(e) < MAXIMUM_ERROR):
@@ -139,8 +144,13 @@ def main():
             file = open('e_plot.csv', 'w+', newline ='')            
             with file:   
                 write = csv.writer(file)
-                #write.writerows(e_plot)
-                write.writerows(map(lambda x: [x], e_plot))
+                write.writerows(plot)
+                #write.writerows(map(lambda x: [x], e_plot))
+
+            plt.plot(plot[0],plot[1])
+            plt.xlabel("Time (in seconds)")
+            plt.ylabel("Error (in degrees)")
+            plt.savefig('error.png')
 
             break
 
