@@ -22,7 +22,7 @@ pwm_prev = 5
 # Other Variables
 ###################################
 axis = 0                #Axis to slew on
-target_position = -30    #relative target position (in degrees clockwise)
+target_position = -90    #relative target position (in degrees clockwise)
 AXIS_REMAP_X = 0x00
 AXIS_REMAP_Y = 0x01
 AXIS_REMAP_Z = 0x02
@@ -42,7 +42,7 @@ def main():
     ###################################
     # Variables - Controller
     ###################################
-    kp = 1
+    kp = 1/90
     ki = 0
     kd = 0
 
@@ -50,7 +50,7 @@ def main():
     eprev = 0
     eintegral = 0
     pwm_prev = 5.3
-    MAXIMUM_ERROR = 2
+    MAXIMUM_ERROR = 1.5
 
     ###################################
     # Other Variables
@@ -78,8 +78,9 @@ def main():
     time.sleep(3)
 
     #FOR ERROR PLOTTING
-    plot = [[],[]]
-    TIME_START = time.time()
+    plot = [[],[]]      #Error
+    io_data = [[],[],[]]   #FOR SYSTEM ANALYZER
+    TIME_START = time.time()    
 
     while(True):
         prevT = 0
@@ -95,38 +96,19 @@ def main():
 
             dedt = (e-eprev)/deltaT
             eintegral = eintegral + e*deltaT
-            
-            #Plotting
+
+            #Calculate control signal
+            u = kp*e + kd*dedt + ki*eintegral
+            pwm = MIN_SIGNAL + u
+
+            #Plotting Error
             plot[0].append(time.time()-TIME_START)
             plot[1].append(e)
 
-            #Control signal
-            if (abs(e) < MAXIMUM_ERROR):
-                u = 0
-                print("Error:",e,"Control_Signal:",u)
-            else:
-                u = kp*e + kd*dedt + ki*eintegral
-                print("Error:",e,"Control_Signal:",u)
-            
-            if (u > 0):
-                pwm = pwm_prev - 2*STEP_SIZE
-                #pwm = pwm_prev - 2*STEP_SIZE
-                print("Error < 1")
-            elif (u < 0):
-                pwm = pwm_prev + STEP_SIZE
-                print("Error > 1")
-            else:
-                pwm = MIN_SIGNAL
-                print("Error < -1")
-
-            if (pwm < 5 or pwm > 10):
-                print("PWM OUT OF RANGE")
-                print("Setting PWM to previous value")
-                pwm = pwm_prev
-                time.sleep(1)
-                print("Target unreachable")
-                print("You might want to stop now")
-                time.sleep(2)
+            #Plotting Input, Output
+            io_data[0].append(time.time()-TIME_START)
+            io_data[1].append(pwm)
+            io_data[2].append(current_position)
 
             print("PWM value is:",pwm)
             print("Gyroscope value", bno.read_gyroscope()[axis])
@@ -140,17 +122,33 @@ def main():
             time.sleep(1)
             stop_motor(motor)
 
-            # writing the data into the file
+            # writing error data into file
             file = open('e_plot.csv', 'w+', newline ='')            
             with file:   
                 write = csv.writer(file)
                 write.writerows(plot)
                 #write.writerows(map(lambda x: [x], e_plot))
+            file.close()
+
+            #Writing IO data into file
+            file = open('io_data.csv', 'w+', newline='')
+            with file:
+                write = csv.writer(file)
+                write.writerows(io_data)
 
             plt.plot(plot[0],plot[1])
             plt.xlabel("Time (in seconds)")
             plt.ylabel("Error (in degrees)")
             plt.savefig('error.png')
+
+            plt.close()
+
+            plt.plot(io_data[1],io_data[2])
+            plt.xlabel("Input (duty cycle)")
+            plt.ylabel("Position (in degrees)")
+            plt.savefig('io.png')
+
+            plt.close()
 
             break
 
