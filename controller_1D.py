@@ -42,7 +42,7 @@ def main():
     ###################################
     # Variables - Controller
     ###################################
-    kp = 1/90
+    kp = -1/90
     ki = 0
     kd = 0
 
@@ -110,8 +110,8 @@ def main():
             io_data[1].append(pwm)
             io_data[2].append(current_position)
 
-            print("PWM value is:",pwm)
-            print("Gyroscope value", bno.read_gyroscope()[axis])
+            print("Error:",e,"Control_Signal:",pwm)
+            #print("Gyroscope value", bno.read_gyroscope()[axis])
             set_motor(motor,pwm)    #Put in await function. Continuously monitor error and change PID vals, but slowly change PWM
             time.sleep(1)
             pwm_prev = pwm
