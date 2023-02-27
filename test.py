@@ -1,108 +1,118 @@
 import lgpio
-# import RPi.GPIO as gpio
+from Adafruit_BNO055 import BNO055
+import Adafruit_GPIO.I2C as I2C
 import time
 import threading
+import csv
+import matplotlib.pyplot as plt
 
 MOTOR = 12
 FREQ = 50
-MAX_SIGNAL = 10
+MAX_SIGNAL = 9
 MIN_SIGNAL = 5
-STEP_SIZE = .5
-
-# gpio.setmode(gpio.BOARD)
-# gpio.setup(MOTOR, gpio.OUT)
-h = lgpio.gpiochip_open(0)
+STEP_SIZE = .1
+TIME_START = time.time()
+AXIS = 0 
 
 def main():
-    #calibrate()
+    io_data = [[],[],[]]
+    motor, bno = setup()
     arm()
 
-    time.sleep(5)
+    accelerate(motor,bno,io_data)
+    decelerate(motor,bno,io_data)
 
-    t = threading.Thread(target=testMotorMovement)
-    t.start()
+    data_to_csv(io_data,"io_data.csv")
+    generate_plot(io_data[1],io_data[2],"Input (Duty Cycle)","Output (Position in degrees)","io_data.png")
 
-    time.sleep(5)
+    lgpio.gpiochip_close(motor)
 
-    #accelerate()
+def get_position(bno):
+    return bno.read_euler()[AXIS]
 
-    lgpio.gpiochip_close(h)
+def accelerate(self,bno,io_data):
+    for i in range(MIN_SIGNAL,MAX_SIGNAL,STEP_SIZE):
+        lgpio.tx_pwm(self, MOTOR, FREQ, i)
+        print("Signal is", i)
 
-def accelerate():
-    for i in range(MIN_SIGNAL,MAX_SIGNAL):
-        lgpio.tx_pwm(h, MOTOR, FREQ, i/2)
-        print("Signal is", i,"out of 20")
+        io_data[0] = TIME_START-time.time()
+        io_data[1] = get_position(bno)
+        io_data[2] = i
+
         time.sleep(1)
 
-def manualMove():
-    for i in range(10000):
-        lgpio.gpio_write(h, MOTOR, 1)
-        time.sleep(.002)
-        lgpio.gpio_write(h, MOTOR, 0)
-        time.sleep(.018)
+def decelerate(self,bno,io_data):
+    for i in range(MAX_SIGNAL,MIN_SIGNAL,-STEP_SIZE):
+        lgpio.tx_pwm(self, MOTOR, FREQ, i)
+        print("Signal is", i)
 
-def testMotorMovement():
-    print("Frequency 1")
-    lgpio.tx_pwm(h, MOTOR, FREQ, 10)    #May need to put this on a separate thread.
+        io_data[0] = TIME_START-time.time()
+        io_data[1] = get_position(bno)
+        io_data[2] = i
 
-    # print("Frequency 2")
-    # lgpio.tx_pwm(h, MOTOR, FREQ, 9)
-    # time.sleep(3)
+        time.sleep(1)
 
-    # print("Frequency 3")
-    # lgpio.tx_pwm(h, MOTOR, FREQ, 5)
-    # time.sleep(3)
+def setup():
+    i2c = I2C
+    bno = BNO055.BNO055(i2c=i2c)
+    bno.begin()
+    #calibrate_sensor(bno=bno)
 
-def spinToWin():
-    lgpio.tx_pwm(h, MOTOR, FREQ, 10)
-    time.sleep(10)
+    #Read calibration data from file
+    file = open("calibration_data.txt",'rb')
+    calibration_data = file.read(22)
+    bno.set_calibration(calibration_data)
+    file.close()
 
-def calibrate():
-    turn_off_power = input("Disconnect Power then press any key...")
-
-    print("Now calibrating ESC")
-    print("Now writing maximum output...")
-
-    lgpio.tx_pwm(h, MOTOR, FREQ, MAX_SIGNAL)
-    turn_on_power = input("Turn on power source, then wait 2 seconds and press any key")
-
-
-    print("Sending minimum output")
-    lgpio.tx_pwm(h, MOTOR, FREQ, MIN_SIGNAL)
-
-    time.sleep(7)
-    print("Wait for it...")
-    time.sleep(5)
-
-    lgpio.tx_pwm(h, MOTOR, FREQ, 0)
-    time.sleep(2)
-    print("Arming ESC now...")
-
-    lgpio.tx_pwm(h, MOTOR, FREQ, MIN_SIGNAL)
-
+    calibrate_sensor(bno=bno)
+    print("Successfully automated calibration!!")
     time.sleep(1)
 
-    print("Finished Arming")
+    h = lgpio.gpiochip_open(0)
+    arm(h)
 
-def arm():
-    turn_off_power = input("Disconnect Power then press any key...")
+    return h, bno
 
-    print("Now calibrating ESC")
-    print("Now writing maximum output...")
-
-    lgpio.tx_pwm(h, MOTOR, FREQ, MAX_SIGNAL)
-    turn_on_power = input("Turn on power source, then wait 2 seconds and press any key")
-
-
+def arm(self):
     print("Sending minimum output")
-    lgpio.tx_pwm(h, MOTOR, FREQ, MIN_SIGNAL)
-
-    time.sleep(2)
+    lgpio.tx_pwm(self, MOTOR, FREQ, MIN_SIGNAL)
+    turn_on_power = input("Turn on power source and press any key")
+    time.sleep(3)
 
     print("Finished Arming")
+
+def calibrate_sensor(bno):
+    print("Move the sensor around and place it in different configurations to calibrate!")
+    print("Calibrating....")
+    while(bno.get_calibration_status()[1] != 3):
+        print("Calibrating Gyroscope (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[1])
+        time.sleep(1)
+    while(bno.get_calibration_status()[2] != 3):
+        print("Calibrating Accelerometer (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[2])
+        time.sleep(1)
+    while(bno.get_calibration_status()[3] != 3):
+        print("Calibrating Magnetometer (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[3])
+        time.sleep(1)
+
+    print("-----------------FULLY CALIBRATED-----------------")
+
+def data_to_csv(data,filename):
+    file = open(filename, 'w+', newline ='')            
+    with file:   
+        write = csv.writer(file)
+        write.writerows(data)
+    file.close()
+
+def generate_plot(x,y,x_label,y_label,filename,y2=None,y3=None):
+    plt.plot(x,y)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+    if(y2 != None): plt.plot(x,y2)
+    if(y3 != None): plt.plot(x,y3)
+    plt.savefig(filename)
+
+    plt.close()
 
 if __name__ == "__main__":
     main()
-    #testMotorMovement()
-    #spinToWin()
-    #accelerate()

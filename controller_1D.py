@@ -78,8 +78,9 @@ def main():
     time.sleep(3)
 
     #FOR ERROR PLOTTING
-    plot = [[],[]]      #Error
-    io_data = [[],[],[]]   #FOR SYSTEM ANALYZER
+    error_data = [[],[]]        #Error
+    io_data = [[],[],[]]        #FOR SYSTEM ANALYZER
+    gyro_data = [[],[],[],[]]   #For analyzing relationship with pwm signal
     TIME_START = time.time()    
 
     while(True):
@@ -102,13 +103,19 @@ def main():
             pwm = MIN_SIGNAL + u
 
             #Plotting Error
-            plot[0].append(time.time()-TIME_START)
-            plot[1].append(e)
+            error_data[0].append(time.time()-TIME_START)
+            error_data[1].append(e)
 
             #Plotting Input, Output
             io_data[0].append(time.time()-TIME_START)
             io_data[1].append(pwm)
             io_data[2].append(current_position)
+
+            #Plotting gyroscope data
+            gyro_data[0].append(time.time()-TIME_START)
+            gyro_data[1].append(bno.gyro[0])
+            gyro_data[2].append(bno.gyro[1])
+            gyro_data[3].append(bno.gyro[2])
 
             print("Error:",e,"Control_Signal:",pwm)
             #print("Gyroscope value", bno.read_gyroscope()[axis])
@@ -122,33 +129,13 @@ def main():
             time.sleep(1)
             stop_motor(motor)
 
-            # writing error data into file
-            file = open('e_plot.csv', 'w+', newline ='')            
-            with file:   
-                write = csv.writer(file)
-                write.writerows(plot)
-                #write.writerows(map(lambda x: [x], e_plot))
-            file.close()
+            data_to_csv(error_data,"e_plot.csv")    #Writing error data into file
+            data_to_csv(io_data,"io_data.csv")      #Writing IO data into file
+            data_to_csv(gyro_data,"gyro.csv")       #Writing gyro data into file
 
-            #Writing IO data into file
-            file = open('io_data.csv', 'w+', newline='')
-            with file:
-                write = csv.writer(file)
-                write.writerows(io_data)
-
-            plt.plot(plot[0],plot[1])
-            plt.xlabel("Time (in seconds)")
-            plt.ylabel("Error (in degrees)")
-            plt.savefig('error.png')
-
-            plt.close()
-
-            plt.plot(io_data[1],io_data[2])
-            plt.xlabel("Input (duty cycle)")
-            plt.ylabel("Position (in degrees)")
-            plt.savefig('io.png')
-
-            plt.close()
+            generate_plot(error_data[0],error_data[1],"Time (in seconds)", "Error (in degrees)","error.png")
+            generate_plot(io_data[1],io_data[2],"Input (duty cycle)","Position (in degrees)","io.png")
+            generate_plot(gyro_data[0],gyro_data[1],"Time (in seconds)","Radians/s",y2=gyro_data[2],y3=gyro_data[3])
 
             break
 
@@ -262,7 +249,33 @@ def calibrate_sensor(bno):
 
     print("-----------------FULLY CALIBRATED-----------------")
 
+########################################## 
+#2D Plot Generator, outputs plot to file
+# Inputs: x-data (array or list), y-data (array or list), x_label (string), y_label (string), filename (string)
+# Outputs: None
+##########################################
+def generate_plot(x,y,x_label,y_label,filename,y2=None,y3=None):
+    plt.plot(x,y)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
 
+    if(y2 != None): plt.plot(x,y2)
+    if(y3 != None): plt.plot(x,y3)
+    plt.savefig(filename)
+
+    plt.close()
+
+########################################## 
+# Outputs list data to csv file
+# Inputs: data (list or array), filename (string)
+# Outputs: None
+##########################################
+def data_to_csv(data,filename):
+    file = open(filename, 'w+', newline ='')            
+    with file:   
+        write = csv.writer(file)
+        write.writerows(data)
+    file.close()
 
 ########################################## 
 # Run Main function from command line
