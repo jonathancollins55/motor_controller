@@ -139,7 +139,7 @@ def main():
 
             generate_plot(error_data[0],error_data[1],"Time (in seconds)", "Error (in degrees)","error.png")
             generate_plot(io_data[1],io_data[2],"Input (duty cycle)","Position (in degrees)","io.png")
-            generate_plot(gyro_data[0],gyro_data[1],"Time (in seconds)","Radians/s",y2=gyro_data[2],y3=gyro_data[3])
+            generate_plot(gyro_data[0],gyro_data[1],"Time (in seconds)","Radians/s","gyro.png",y2=gyro_data[2],y3=gyro_data[3])
 
             break
 
