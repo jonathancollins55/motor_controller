@@ -117,9 +117,9 @@ def main():
 
             #Plotting gyroscope data
             gyro_data[0].append(time.time()-TIME_START)
-            gyro_data[1].append(bno.gyro[0])
-            gyro_data[2].append(bno.gyro[1])
-            gyro_data[3].append(bno.gyro[2])
+            gyro_data[1].append(bno.read_gyroscope[0])
+            gyro_data[2].append(bno.read_gyroscope[1])
+            gyro_data[3].append(bno.read_gyroscope[2])
 
             print("Error:",e,"Control_Signal:",pwm)
             #print("Gyroscope value", bno.read_gyroscope()[axis])
