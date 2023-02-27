@@ -42,7 +42,7 @@ def main():
     ###################################
     # Variables - Controller
     ###################################
-    kp = -1/90
+    kp = -1/45
     ki = 0
     kd = 0
 
@@ -101,6 +101,10 @@ def main():
             #Calculate control signal
             u = kp*e + kd*dedt + ki*eintegral
             pwm = MIN_SIGNAL + u
+
+            #Bound control output
+            if (pwm > 10): pwm = MAX_SIGNAL
+            if (pwm < 5): pwm = MIN_SIGNAL
 
             #Plotting Error
             error_data[0].append(time.time()-TIME_START)

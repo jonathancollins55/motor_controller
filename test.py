@@ -19,8 +19,9 @@ def main():
     motor, bno = setup()
     arm()
 
-    accelerate(motor,bno,io_data)
-    decelerate(motor,bno,io_data)
+    for i in range(3):
+        accelerate(motor,bno,io_data)
+        decelerate(motor,bno,io_data)
 
     data_to_csv(io_data,"io_data.csv")
     generate_plot(io_data[1],io_data[2],"Input (Duty Cycle)","Output (Position in degrees)","io_data.png")
