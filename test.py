@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 
 MOTOR = 12
 FREQ = 50
-MAX_SIGNAL = 9
-MIN_SIGNAL = 5
-STEP_SIZE = .1
+MAX_SIGNAL = 90
+MIN_SIGNAL = 50
+STEP_SIZE = 1
 TIME_START = time.time()
 AXIS = 0 
 
@@ -32,8 +32,9 @@ def get_position(bno):
     return bno.read_euler()[AXIS]
 
 def accelerate(self,bno,io_data):
-    for i in range(MIN_SIGNAL*10,MAX_SIGNAL*10,STEP_SIZE*10):
-        lgpio.tx_pwm(self, MOTOR, FREQ, i)
+    for i in range(MIN_SIGNAL,MAX_SIGNAL,STEP_SIZE):
+        pwm = i/10
+        lgpio.tx_pwm(self, MOTOR, FREQ, pwm)
         print("Signal is", i)
 
         io_data[0] = TIME_START-time.time()
@@ -43,8 +44,9 @@ def accelerate(self,bno,io_data):
         time.sleep(1)
 
 def decelerate(self,bno,io_data):
-    for i in range(MIN_SIGNAL*10,MAX_SIGNAL*10,STEP_SIZE*10):
-        lgpio.tx_pwm(self, MOTOR, FREQ, i)
+    for i in range(MIN_SIGNAL,MAX_SIGNAL,-STEP_SIZE):
+        pwm = i/10
+        lgpio.tx_pwm(self, MOTOR, FREQ, pwm)
         print("Signal is", i)
 
         io_data[0] = TIME_START-time.time()
