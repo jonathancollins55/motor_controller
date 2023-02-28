@@ -19,16 +19,13 @@ def main():
     motor, bno = setup()
 
     try:
-        for i in range(5):
+        while(True):
             accelerate(motor,bno,io_data)
             decelerate(motor,bno,io_data)
-
-        data_to_csv(io_data,"io_data.csv")
-        generate_plot(io_data[1],io_data[2],"Input (Duty Cycle)","Output (Position in degrees)","io_data.png")
-
-        lgpio.gpiochip_close(motor)
     except KeyboardInterrupt:
         lgpio.gpiochip_close(motor)
+        data_to_csv(io_data,"io_data.csv")
+        generate_plot(io_data[1],io_data[2],"Input (Duty Cycle)","Output (Position in degrees)","io_data.png")
     
 
 def get_position(bno):
@@ -39,10 +36,11 @@ def accelerate(self,bno,io_data):
         pwm = i/10
         lgpio.tx_pwm(self, MOTOR, FREQ, pwm)
         print("Signal is", i)
+        pos = get_position(bno)
 
-        io_data[0] = TIME_START-time.time()
-        io_data[1] = get_position(bno)
-        io_data[2] = i
+        io_data[0].append(TIME_START-time.time())
+        io_data[1].append(pos)
+        io_data[2].append(pwm)
 
         #time.sleep(1)
 
@@ -51,10 +49,11 @@ def decelerate(self,bno,io_data):
         pwm = i/10
         lgpio.tx_pwm(self, MOTOR, FREQ, pwm)
         print("Signal is", i)
+        pos = get_position(bno)
 
-        io_data[0] = TIME_START-time.time()
-        io_data[1] = get_position(bno)
-        io_data[2] = i
+        io_data[0].append(TIME_START-time.time())
+        io_data[1].append(pos)
+        io_data[2].append(pwm)
 
         #time.sleep(1)
 
