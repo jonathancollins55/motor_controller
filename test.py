@@ -17,7 +17,7 @@ AXIS = 0
 def main():
     io_data = [[],[],[]]
     motor, bno = setup()
-    arm()
+    arm(motor)
 
     for i in range(3):
         accelerate(motor,bno,io_data)
