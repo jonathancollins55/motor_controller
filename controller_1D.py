@@ -139,7 +139,7 @@ def main():
 
             generate_plot(error_data[0],error_data[1],"Time (in seconds)", "Error (in degrees)","error.png")
             generate_plot(io_data[1],io_data[2],"Input (duty cycle)","Position (in degrees)","io.png")
-            generate_plot(gyro_data[0][:-1],gyro_data[1],"Time (in seconds)","Radians/s","gyro.png",y2=gyro_data[2],y3=gyro_data[3])
+            generate_plot(gyro_data[0][:len(gyro_data[1])-1],gyro_data[1],"Time (in seconds)","Radians/s","gyro.png",y2=gyro_data[2],y3=gyro_data[3])
 
             break
 
@@ -215,7 +215,7 @@ def setup():
 def stop_motor(self):
     print("Stopping motor")
     lgpio.tx_pwm(self, MOTOR, FREQ, MIN_SIGNAL)
-    time.sleep(10)
+    time.sleep(3)
     lgpio.gpio_write(self, MOTOR, 0)
     lgpio.gpiochip_close(self)
 
