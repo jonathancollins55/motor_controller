@@ -22,6 +22,8 @@ def main():
         accelerate(motor,bno,io_data)
         #decelerate(motor,bno,io_data)
         lgpio.gpiochip_close(motor)
+        data_to_csv(io_data,"io_data.csv")
+        generate_plot(io_data[2],io_data[1],"Input (Duty Cycle)","Output (Position in degrees)","io_data.png")
     except KeyboardInterrupt:
         lgpio.gpiochip_close(motor)
         data_to_csv(io_data,"io_data.csv")
