@@ -41,7 +41,7 @@ def accelerate(self,bno,io_data):
         io_data[1] = get_position(bno)
         io_data[2] = i
 
-        time.sleep(1)
+        #time.sleep(1)
 
 def decelerate(self,bno,io_data):
     for i in range(MIN_SIGNAL,MAX_SIGNAL,-STEP_SIZE):
@@ -53,7 +53,7 @@ def decelerate(self,bno,io_data):
         io_data[1] = get_position(bno)
         io_data[2] = i
 
-        time.sleep(1)
+        #time.sleep(1)
 
 def setup():
     i2c = I2C
