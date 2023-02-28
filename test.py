@@ -32,7 +32,7 @@ def get_position(bno):
     return bno.read_euler()[AXIS]
 
 def accelerate(self,bno,io_data):
-    for i in range(MIN_SIGNAL,MAX_SIGNAL,STEP_SIZE):
+    for i in range(MIN_SIGNAL*10,MAX_SIGNAL*10,STEP_SIZE*10):
         lgpio.tx_pwm(self, MOTOR, FREQ, i)
         print("Signal is", i)
 
@@ -43,7 +43,7 @@ def accelerate(self,bno,io_data):
         time.sleep(1)
 
 def decelerate(self,bno,io_data):
-    for i in range(MAX_SIGNAL,MIN_SIGNAL,-STEP_SIZE):
+    for i in range(MIN_SIGNAL*10,MAX_SIGNAL*10,STEP_SIZE*10):
         lgpio.tx_pwm(self, MOTOR, FREQ, i)
         print("Signal is", i)
 
