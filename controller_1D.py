@@ -95,6 +95,9 @@ def main():
             current_position = get_position(bno)
             e = target_position-current_position
 
+            #gyro vals
+            gyro = bno.read_gyroscope()
+
             dedt = (e-eprev)/deltaT
             eintegral = eintegral + e*deltaT
 
@@ -117,9 +120,9 @@ def main():
 
             #Plotting gyroscope data
             gyro_data[0].append(time.time()-TIME_START)
-            gyro_data[1].append(bno.read_gyroscope()[0])
-            gyro_data[2].append(bno.read_gyroscope()[1])
-            gyro_data[3].append(bno.read_gyroscope()[2])
+            gyro_data[1].append(gyro[0])
+            gyro_data[2].append(gyro[1])
+            gyro_data[3].append(gyro[2])
 
             print("Error:",e,"Control_Signal:",pwm)
             #print("Gyroscope value", bno.read_gyroscope()[axis])
@@ -139,7 +142,7 @@ def main():
 
             generate_plot(error_data[0],error_data[1],"Time (in seconds)", "Error (in degrees)","error.png")
             generate_plot(io_data[1],io_data[2],"Input (duty cycle)","Position (in degrees)","io.png")
-            generate_plot(gyro_data[0][:len(gyro_data[1])-1],gyro_data[1],"Time (in seconds)","Radians/s","gyro.png",y2=gyro_data[2],y3=gyro_data[3])
+            generate_plot(gyro_data[0],gyro_data[1],"Time (in seconds)","Radians/s","gyro.png",y2=gyro_data[2],y3=gyro_data[3])
 
             break
 
