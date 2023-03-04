@@ -12,12 +12,23 @@ def main():
     bno.begin()
     calibrate_sensor(bno)
 
+    while(True):
+        if(bno.calibrated()): break
+        else: print("BNO055 not fully calibrated")
+
+    tare_zero = bno.read_euler()[0]
+
     for i in range(24):
+        print("Turn IMU now!")
         time.sleep(3)
-        measured_pointing = bno.read_euler()[0]     #Yaw axis
-        pointing_data[0].append(i)
+        print("Finished turning")
+        measured_pointing = (bno.read_euler()[0] - tare_zero)     #Yaw axis
+        pointing_data[0].append(i+1)
         pointing_data[1].append((i+1)*15)
         pointing_data[2].append(measured_pointing)
+        print("True pointing:",(i+1)*15)
+        print("Measured pointing:", measured_pointing)
+
     data_to_csv(pointing_data,"IMU_accuracy.csv")
     generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",pointing_data[2])
 
