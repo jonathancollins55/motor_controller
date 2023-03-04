@@ -10,11 +10,13 @@ def main():
     i2c = I2C
     bno = BNO055.BNO055(i2c=i2c)
     bno.begin()
-    calibrate_sensor(bno)
-
-    while(True):
-        if(bno.calibrated()): break
-        else: print("BNO055 not fully calibrated")
+    
+    file = open("calibration_data.txt",'rb')
+    calibration_data = file.read(22)
+    bno.set_calibration(calibration_data)
+    file.close()
+    print("Calibrated!")
+    time.sleep(1)
 
     tare_zero = bno.read_euler()[0]
 
@@ -31,23 +33,6 @@ def main():
 
     data_to_csv(pointing_data,"IMU_accuracy.csv")
     generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",pointing_data[2])
-
-
-
-def calibrate_sensor(bno):
-    print("Move the sensor around and place it in different configurations to calibrate!")
-    print("Calibrating....")
-    while(bno.get_calibration_status()[1] != 3):
-        print("Calibrating Gyroscope (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[1])
-        time.sleep(1)
-    while(bno.get_calibration_status()[2] != 3):
-        print("Calibrating Accelerometer (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[2])
-        time.sleep(1)
-    while(bno.get_calibration_status()[3] != 3):
-        print("Calibrating Magnetometer (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[3])
-        time.sleep(1)
-
-    print("-----------------FULLY CALIBRATED-----------------")
 
 def data_to_csv(data,filename):
     file = open(filename, 'w+', newline ='')            
