@@ -33,24 +33,15 @@ def setup():
     i2c = I2C
     bno = BNO055.BNO055(i2c=i2c)
     bno.begin()
-    calibrate_sensor(bno=bno)
+
+    file = open("calibration_data.txt",'rb')
+    calibration_data = file.read(22)
+    bno.set_calibration(calibration_data)
+    file.close()
+    print("Calibrated!")
+    time.sleep(1)
     
     return bno
-
-def calibrate_sensor(bno):
-    print("Move the sensor around and place it in different configurations to calibrate!")
-    print("Calibrating....")
-    while(bno.get_calibration_status()[1] != 3):
-        print("Calibrating Gyroscope (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[1])
-        time.sleep(1)
-    while(bno.get_calibration_status()[2] != 3):
-        print("Calibrating Accelerometer (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[2])
-        time.sleep(1)
-    while(bno.get_calibration_status()[3] != 3):
-        print("Calibrating Magnetometer (3 is fully calibrated) | Currently: ", bno.get_calibration_status()[3])
-        time.sleep(1)
-
-    print("-----------------FULLY CALIBRATED-----------------")
 
 if __name__ == "__main__":
     main()

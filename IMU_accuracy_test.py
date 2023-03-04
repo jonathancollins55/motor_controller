@@ -28,6 +28,7 @@ def main():
         pointing_data[0].append(i+1)
         pointing_data[1].append(15*i)
         pointing_data[2].append(measured_pointing)
+        print("Measured pointing:", pointing)
         print("True pointing:",(i+1)*15)
         print("Measured pointing:", measured_pointing)
         print("Turn IMU now!")
