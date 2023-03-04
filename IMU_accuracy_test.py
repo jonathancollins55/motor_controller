@@ -31,7 +31,7 @@ def main():
         print("True pointing:",(i+1)*15)
         print("Measured pointing:", measured_pointing)
 
-    data_to_csv(pointing_data,"IMU_accuracy.csv")
+    data_to_csv(pointing_data,"IMU_Accuracy_Test.csv")
     generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",pointing_data[2])
 
 def data_to_csv(data,filename):
