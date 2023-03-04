@@ -22,7 +22,7 @@ def main():
     tare_zero = bno.read_euler()[0]
 
     for i in range(24):
-        pointing = (bno.read_euler()[0] - tare_zero)     #Yaw axis
+        pointing = bno.read_euler()[0]    #Yaw axis
         if (pointing < tare_zero): measured_pointing = 360 + pointing - tare_zero
         else: measured_pointing = pointing - tare_zero
         pointing_data[0].append(i+1)
@@ -35,7 +35,7 @@ def main():
         print("Finished turning")
 
     data_to_csv(pointing_data,"IMU_Accuracy_Test.csv")
-    generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",measured_pointing)
+    generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",pointing_data[2])
 
 def data_to_csv(data,filename):
     file = open(filename, 'w+', newline ='')            
