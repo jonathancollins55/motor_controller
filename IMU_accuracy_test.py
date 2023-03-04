@@ -3,6 +3,7 @@ import Adafruit_GPIO.I2C as I2C
 import time
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
 
 def main():
     pointing_data = [[],[],[]]  #time, real_pointing, measured_pointing
@@ -21,18 +22,20 @@ def main():
     tare_zero = bno.read_euler()[0]
 
     for i in range(24):
-        print("Turn IMU now!")
-        time.sleep(3)
-        print("Finished turning")
-        measured_pointing = (bno.read_euler()[0] - tare_zero)     #Yaw axis
+        pointing = (bno.read_euler()[0] - tare_zero)     #Yaw axis
+        if (pointing < tare_zero): measured_pointing = 360 + pointing - tare_zero
+        else: measured_pointing = pointing - tare_zero
         pointing_data[0].append(i+1)
-        pointing_data[1].append((i+1)*15)
+        pointing_data[1].append(15*i)
         pointing_data[2].append(measured_pointing)
         print("True pointing:",(i+1)*15)
         print("Measured pointing:", measured_pointing)
+        print("Turn IMU now!")
+        time.sleep(4)
+        print("Finished turning")
 
     data_to_csv(pointing_data,"IMU_Accuracy_Test.csv")
-    generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",pointing_data[2])
+    generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",measured_pointing)
 
 def data_to_csv(data,filename):
     file = open(filename, 'w+', newline ='')            
