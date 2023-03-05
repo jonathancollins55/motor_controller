@@ -14,7 +14,7 @@ def main():
     bno.begin()
     
     calibrate_sensor(bno)
-    time.sleep(1)
+    time.sleep(5)
 
     tare_zero = bno.read_euler()[0]
     tare_zero_q = bno.read_quaternion()
