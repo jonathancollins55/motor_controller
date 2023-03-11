@@ -6,6 +6,34 @@ import time
 import csv
 import matplotlib.pyplot as plt
 
+###################################
+# Variables - Controller
+###################################
+KP = 1/360000
+KI = 0
+KD = 0
+
+PREVT = 0
+EPREV = 0
+EINTEGRAL = 0
+PWM_PREV = 7
+
+###################################
+# Other Variables
+###################################
+AXIS = 0                #Axis to slew on
+TARGET_POSITION = 90    #relative target position (in degrees clockwise)
+AXIS_REMAP_X = 0x00
+AXIS_REMAP_Y = 0x01
+AXIS_REMAP_Z = 0x02
+
+MOTOR = 12
+FREQ = 50
+MAX_SIGNAL = 10
+SIGNAL_STOP = 7.5
+MIN_SIGNAL = 5
+STEP_SIZE = .001
+
 ########################################## 
 # Main Function
 # Inputs: None
