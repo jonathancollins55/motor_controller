@@ -16,7 +16,7 @@ KD = 0
 PREVT = 0
 EPREV = 0
 EINTEGRAL = 0
-PWM_PREV = 7.5
+PWM_PREV = 7
 
 ###################################
 # Other Variables
@@ -72,7 +72,7 @@ def main():
             gyro = bno.read_gyroscope()
 
             dedt = (e-EPREV)/deltaT
-            eintegral = EINTEGRAL + e*deltaT
+            #eint = EINTEGRAL + e*deltaT
 
             #Calculate control signal
             if (e < 1.5):
@@ -106,7 +106,7 @@ def main():
             set_motor(motor,pwm)    #Put in await function. Continuously monitor error and change PID vals, but slowly change PWM
             #time.sleep(1)
             PWM_PREV = pwm
-            EINTEGRAL = EINTEGRAL + eintegral
+            #EINTEGRAL = EINTEGRAL + eint
 
         except KeyboardInterrupt:
             print()
