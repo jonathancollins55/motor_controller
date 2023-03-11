@@ -16,7 +16,7 @@ KD = 0
 PREVT = 0
 EPREV = 0
 EINTEGRAL = 0
-PWM_PREV = 7
+PWM_PREV = 7.5
 
 ###################################
 # Other Variables
