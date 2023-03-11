@@ -9,20 +9,20 @@ import matplotlib.pyplot as plt
 ###################################
 # Variables - Controller
 ###################################
-kp = 1
-ki = 1
-kd = 1
+KP = 1/360000
+KI = 0
+KD = 0
 
-prevT = 0
-eprev = 0
-eintegral = 0
-pwm_prev = 5
+PREVT = 0
+EPREV = 0
+EINTEGRAL = 0
+PWM_PREV = 7.5
 
 ###################################
 # Other Variables
 ###################################
-axis = 0                #Axis to slew on
-target_position = -90    #relative target position (in degrees clockwise)
+AXIS = 0                #Axis to slew on
+TARGET_POSITION = 90    #relative target position (in degrees clockwise)
 AXIS_REMAP_X = 0x00
 AXIS_REMAP_Y = 0x01
 AXIS_REMAP_Z = 0x02
@@ -30,8 +30,9 @@ AXIS_REMAP_Z = 0x02
 MOTOR = 12
 FREQ = 50
 MAX_SIGNAL = 10
+SIGNAL_STOP = 7.5
 MIN_SIGNAL = 5
-STEP_SIZE = .2
+STEP_SIZE = .001
 
 ########################################## 
 # Main Function
@@ -39,34 +40,6 @@ STEP_SIZE = .2
 # Outputs: None
 ##########################################
 def main():
-    ###################################
-    # Variables - Controller
-    ###################################
-    kp = -1/45
-    ki = 0
-    kd = 0
-
-    prevT = 0
-    eprev = 0
-    eintegral = 0
-    pwm_prev = 5.3
-    MAXIMUM_ERROR = 1.5
-
-    ###################################
-    # Other Variables
-    ###################################
-    axis = 0                #Axis to slew on
-    #target_position = -10    #relative target position (in degrees clockwise) (Must be negative for unidirectional motor)
-    AXIS_REMAP_X = 0x00
-    AXIS_REMAP_Y = 0x01
-    AXIS_REMAP_Z = 0x02
-
-    MOTOR = 12
-    FREQ = 50
-    MAX_SIGNAL = 10
-    MIN_SIGNAL = 5
-    STEP_SIZE = .025
-
     current_position = 0
 
     motor, bno = setup()
@@ -98,12 +71,16 @@ def main():
             #gyro vals
             gyro = bno.read_gyroscope()
 
-            dedt = (e-eprev)/deltaT
+            dedt = (e-EPREV)/deltaT
             eintegral = eintegral + e*deltaT
 
             #Calculate control signal
-            u = kp*e + kd*dedt + ki*eintegral
-            pwm = MIN_SIGNAL + u
+            if (e < 1.5):
+                u = 0
+                pwm = PWM_PREV
+            else:
+                u = KP*e + KD*dedt + KI*eintegral
+                pwm = PWM_PREV - u
 
             #Bound control output
             if (pwm > 10): pwm = MAX_SIGNAL
@@ -128,7 +105,7 @@ def main():
             #print("Gyroscope value", bno.read_gyroscope()[axis])
             set_motor(motor,pwm)    #Put in await function. Continuously monitor error and change PID vals, but slowly change PWM
             #time.sleep(1)
-            pwm_prev = pwm
+            PWM_PREV = pwm
 
         except KeyboardInterrupt:
             print()
@@ -152,7 +129,7 @@ def main():
 # Outputs: position on specified axis
 ##########################################
 def get_position(bno):
-    return bno.read_euler()[axis]
+    return bno.read_euler()[AXIS]
 
 ########################################## 
 # Function to get angle of desired position
@@ -160,8 +137,8 @@ def get_position(bno):
 # Outputs: absolute target position
 ##########################################
 def get_target_position(bno):
-    turn_degree = target_position % 360
-    current_position = bno.read_euler()[axis]
+    turn_degree = TARGET_POSITION % 360
+    current_position = bno.read_euler()[AXIS]
 
     if(current_position + turn_degree > 360):
         return (current_position + turn_degree) % 360
