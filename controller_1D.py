@@ -108,7 +108,7 @@ def main():
                 u = 0
                 pwm = PWM_PREV
             else:
-                u = KP*e + KD*dedt + KI*EINTEGRAL
+                u = KP*e
                 pwm = PWM_PREV - u
 
             #Bound control output
