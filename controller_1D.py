@@ -22,7 +22,7 @@ pwm_prev = 5
 # Other Variables
 ###################################
 axis = 0                #Axis to slew on
-target_position = -30    #relative target position (in degrees clockwise)
+target_position = -90    #relative target position (in degrees clockwise)
 AXIS_REMAP_X = 0x00
 AXIS_REMAP_Y = 0x01
 AXIS_REMAP_Z = 0x02
@@ -42,7 +42,7 @@ def main():
     ###################################
     # Variables - Controller
     ###################################
-    kp = 1
+    kp = -1/45
     ki = 0
     kd = 0
 
@@ -50,7 +50,7 @@ def main():
     eprev = 0
     eintegral = 0
     pwm_prev = 5.3
-    MAXIMUM_ERROR = 2
+    MAXIMUM_ERROR = 1.5
 
     ###################################
     # Other Variables
@@ -78,8 +78,10 @@ def main():
     time.sleep(3)
 
     #FOR ERROR PLOTTING
-    plot = [[],[]]
-    TIME_START = time.time()
+    error_data = [[],[]]        #Error
+    io_data = [[],[],[]]        #FOR SYSTEM ANALYZER
+    gyro_data = [[],[],[],[]]   #For analyzing relationship with pwm signal
+    TIME_START = time.time()    
 
     while(True):
         prevT = 0
@@ -93,45 +95,39 @@ def main():
             current_position = get_position(bno)
             e = target_position-current_position
 
+            #gyro vals
+            gyro = bno.read_gyroscope()
+
             dedt = (e-eprev)/deltaT
             eintegral = eintegral + e*deltaT
-            
-            #Plotting
-            plot[0].append(time.time()-TIME_START)
-            plot[1].append(e)
 
-            #Control signal
-            if (abs(e) < MAXIMUM_ERROR):
-                u = 0
-                print("Error:",e,"Control_Signal:",u)
-            else:
-                u = kp*e + kd*dedt + ki*eintegral
-                print("Error:",e,"Control_Signal:",u)
-            
-            if (u > 0):
-                pwm = pwm_prev - 2*STEP_SIZE
-                #pwm = pwm_prev - 2*STEP_SIZE
-                print("Error < 1")
-            elif (u < 0):
-                pwm = pwm_prev + STEP_SIZE
-                print("Error > 1")
-            else:
-                pwm = MIN_SIGNAL
-                print("Error < -1")
+            #Calculate control signal
+            u = kp*e + kd*dedt + ki*eintegral
+            pwm = MIN_SIGNAL + u
 
-            if (pwm < 5 or pwm > 10):
-                print("PWM OUT OF RANGE")
-                print("Setting PWM to previous value")
-                pwm = pwm_prev
-                time.sleep(1)
-                print("Target unreachable")
-                print("You might want to stop now")
-                time.sleep(2)
+            #Bound control output
+            if (pwm > 10): pwm = MAX_SIGNAL
+            if (pwm < 5): pwm = MIN_SIGNAL
 
-            print("PWM value is:",pwm)
-            print("Gyroscope value", bno.read_gyroscope()[axis])
+            #Plotting Error
+            error_data[0].append(time.time()-TIME_START)
+            error_data[1].append(e)
+
+            #Plotting Input, Output
+            io_data[0].append(time.time()-TIME_START)
+            io_data[1].append(pwm)
+            io_data[2].append(current_position)
+
+            #Plotting gyroscope data
+            gyro_data[0].append(time.time()-TIME_START)
+            gyro_data[1].append(gyro[0])
+            gyro_data[2].append(gyro[1])
+            gyro_data[3].append(gyro[2])
+
+            print("Error:",e,"Control_Signal:",pwm)
+            #print("Gyroscope value", bno.read_gyroscope()[axis])
             set_motor(motor,pwm)    #Put in await function. Continuously monitor error and change PID vals, but slowly change PWM
-            time.sleep(1)
+            #time.sleep(1)
             pwm_prev = pwm
 
         except KeyboardInterrupt:
@@ -140,17 +136,13 @@ def main():
             time.sleep(1)
             stop_motor(motor)
 
-            # writing the data into the file
-            file = open('e_plot.csv', 'w+', newline ='')            
-            with file:   
-                write = csv.writer(file)
-                write.writerows(plot)
-                #write.writerows(map(lambda x: [x], e_plot))
+            data_to_csv(error_data,"e_plot.csv")    #Writing error data into file
+            data_to_csv(io_data,"io_data.csv")      #Writing IO data into file
+            data_to_csv(gyro_data,"gyro.csv")       #Writing gyro data into file
 
-            plt.plot(plot[0],plot[1])
-            plt.xlabel("Time (in seconds)")
-            plt.ylabel("Error (in degrees)")
-            plt.savefig('error.png')
+            generate_plot(error_data[0],error_data[1],"Time (in seconds)", "Error (in degrees)","error.png")
+            generate_plot(io_data[1],io_data[2],"Input (duty cycle)","Position (in degrees)","io.png")
+            generate_plot(gyro_data[0],gyro_data[1],"Time (in seconds)","Radians/s","gyro.png",y2=gyro_data[2],y3=gyro_data[3])
 
             break
 
@@ -226,7 +218,7 @@ def setup():
 def stop_motor(self):
     print("Stopping motor")
     lgpio.tx_pwm(self, MOTOR, FREQ, MIN_SIGNAL)
-    time.sleep(10)
+    time.sleep(3)
     lgpio.gpio_write(self, MOTOR, 0)
     lgpio.gpiochip_close(self)
 
@@ -264,7 +256,33 @@ def calibrate_sensor(bno):
 
     print("-----------------FULLY CALIBRATED-----------------")
 
+########################################## 
+#2D Plot Generator, outputs plot to file
+# Inputs: x-data (array or list), y-data (array or list), x_label (string), y_label (string), filename (string)
+# Outputs: None
+##########################################
+def generate_plot(x,y,x_label,y_label,filename,y2=None,y3=None):
+    plt.plot(x,y)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
 
+    if(y2 != None): plt.plot(x,y2)
+    if(y3 != None): plt.plot(x,y3)
+    plt.savefig(filename)
+
+    plt.close()
+
+########################################## 
+# Outputs list data to csv file
+# Inputs: data (list or array), filename (string)
+# Outputs: None
+##########################################
+def data_to_csv(data,filename):
+    file = open(filename, 'w+', newline ='')            
+    with file:   
+        write = csv.writer(file)
+        write.writerows(data)
+    file.close()
 
 ########################################## 
 # Run Main function from command line
