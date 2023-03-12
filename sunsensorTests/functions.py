@@ -184,7 +184,7 @@ def calibrate():
                         for mos2 in range(8):
                                 values[0][mos2+8] = max - readMux_2(mos2) # max[mos2+8] - readMux_2(mos2)
                                 values[1][mos2+8] = mos2+1
-                        full = [step] + values
+                        full = [step] + values[0][0:15]
                         writer.writerow(full)
                 step = step + 1
         file.close();
