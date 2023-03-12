@@ -50,7 +50,6 @@ mos_2c.direction = digitalio.Direction.OUTPUT
 
 height = 10.61
 serial_port = 'COM4'
-voltage = False
 if len(sys.argv) == 4:
         function_name = sys.argv[1]
         offset_file = sys.argv[2] 
@@ -58,12 +57,15 @@ if len(sys.argv) == 4:
 if len(sys.argv) == 3:
         function_name = sys.argv[1]
         offset_file = sys.argv[2] 
+        voltage = False
 elif len(sys.argv) == 2:
         function_name = sys.argv[1]
         offset_file = "sensorNoOffsets.csv"
+        voltage = False
 else:
         function_name = ""
         offset_file = "sensorNoOffsets.csv"
+        voltage = False
 # Start all multiplexer outputs to zero
 mos_1a.value = False
 mos_1b.value = False
