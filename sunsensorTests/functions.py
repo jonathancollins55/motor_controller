@@ -151,7 +151,7 @@ def angleMeasure():
         if total_current == 0:
                 return 0
         else:
-                normalized_current_distance = total_current_distance/total_current
+                normalized_current_distance = (total_current_distance/total_current)/100
                 angle = atan(normalized_current_distance/(height-3.2))*4068/(71*-1)
                 return angle
 
