@@ -183,7 +183,7 @@ def calibrate():
                         for mos2 in range(8):
                                 values[0][mos2+8] = readMux_2(mos2) # max[mos2+8] - readMux_2(mos2)
                                 values[1][mos2+8] = mos2+1
-                        full = [step] + values[0][0:15]
+                        full = [step] + values[0][:]
                         writer.writerow(full)
                         time.sleep(0.5)
                 step = step + 1
