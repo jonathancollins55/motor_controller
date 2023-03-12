@@ -167,10 +167,20 @@ def angleMeasure_regular():
         print(offsets)
         file_offset.close()
         for mos1 in range(8):
-                values[0][mos1] = (max-readMux_1(mos1)-offsets[mos1])/max #max[mos1]-readMux_1(mos1)
+                raw_val = readMux_1(mos1)
+                if raw_val > 64000:
+                        raw_val = 65472
+                else:
+                        raw_val = (max-raw_val-offsets[mos1])/max
+                values[0][mos1] = raw_val #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
-                values[0][mos2+8] = (max - readMux_2(mos2)-offsets[mos2+8])/max # max[mos2+8] - readMux_2(mos2)
+                raw_val = readMux_1(mos1)
+                if raw_val > 64000:
+                        raw_val = 65472
+                else:
+                        raw_val = (max - readMux_2(mos2)-offsets[mos2+8])/max
+                values[0][mos2+8] = raw_val # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
         total_current = 0
