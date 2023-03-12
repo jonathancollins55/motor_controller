@@ -143,7 +143,7 @@ def angleMeasure_regular():
         max = 1023 #initialize_whenDark()
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
-        offsets = [int(i) for i in offsets.split(",")]
+        offsets = [int(i)/65472 for i in offsets.split(",")]
         print(offsets)
         file_offset.close()
         for mos1 in range(8):
