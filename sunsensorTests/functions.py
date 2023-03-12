@@ -136,10 +136,6 @@ def printArray():
 # Measure Angle of photodiodes
 def angleMeasure_voltage():
         max = 3.3
-        file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
-        offsets = file_offset.read()
-        offsets = [int(i) for i in offsets.split(",")]
-        print(offsets)
         for mos1 in range(8):
                 values[0][mos1] = (max-readMux_1(mos1))/max*1024
                 values[1][mos1] = (8-mos1)*(-1)
@@ -167,8 +163,9 @@ def angleMeasure_regular():
         max = 65472 #initialize_whenDark()
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
-        offsets = [int(i) for i in offsets.split(",")]
+        offsets = [int(i)*2 for i in offsets.split(",")]
         print(offsets)
+        file_offset.close()
         for mos1 in range(8):
                 values[0][mos1] = (max-readMux_1(mos1)-offsets[mos1])/max*1024 #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
