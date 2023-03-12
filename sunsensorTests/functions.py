@@ -52,7 +52,7 @@ height = 10.61
 serial_port = 'COM4'
 if len(sys.argv) == 3:
         function_name = sys.argv[1]
-        offset_file = sys.arg[2] 
+        offset_file = sys.argv[2] 
 elif len(sys.argv) == 2:
         function_name = sys.argv[1]
         offset_file = "sensorNoOffsets.csv"
