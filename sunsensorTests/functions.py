@@ -185,8 +185,8 @@ def calibrate():
                                 values[1][mos2+8] = mos2+1
                         full = [step] + values[0][0:15]
                         writer.writerow(full)
+                        time.sleep(0.5)
                 step = step + 1
-                time.sleep(0.5)
         file.close();
 
 # Just run any of main functions
