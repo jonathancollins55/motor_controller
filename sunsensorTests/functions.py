@@ -145,6 +145,7 @@ def angleMeasure_regular():
         offsets = file_offset.read()
         offsets = [(int(i)/65472)*1023 for i in offsets.split(",")]
         file_offset.close()
+        print(offsets)
         for mos1 in range(8):
                 raw_val = readMux_1(mos1)
                 raw_val = max-raw_val-offsets[mos1]
