@@ -149,11 +149,15 @@ def angleMeasure_regular():
         for mos1 in range(8):
                 raw_val = readMux_1(mos1)
                 raw_val = max-raw_val-offsets[mos1]
+                if raw_val < 10:
+                        raw_val = 0
                 values[0][mos1] = raw_val #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
                 raw_val = readMux_2(mos2)
                 raw_val = max-raw_val-offsets[mos2+8]
+                if raw_val < 10:
+                            raw_val = 0
                 values[0][mos2+8] = raw_val # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
