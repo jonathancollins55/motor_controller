@@ -50,6 +50,11 @@ mos_2c.direction = digitalio.Direction.OUTPUT
 
 height = 10.61
 serial_port = 'COM4'
+voltage = False
+if len(sys.argv) == 4:
+        function_name = sys.argv[1]
+        offset_file = sys.argv[2] 
+        voltage = sys.argv[3]
 if len(sys.argv) == 3:
         function_name = sys.argv[1]
         offset_file = sys.argv[2] 
@@ -69,6 +74,7 @@ mos_2c.value = False
 
 # Set up values table to take in photodiode intensities
 values = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]]
+
 
 # muxChannel pins for different channels
 muxChannel = [[1,1,0], # channel 3
@@ -96,7 +102,10 @@ def readMux_1(channel):
                 mos_1c.value = True
         else:
                 mos_1c.value = False
-        return mos_chan1.value
+        if voltage:
+                return mos_chan1.voltage
+        else:
+                return mos_chan1.value
     
 # Read in inputs only for multiplexer 2
 def readMux_2(channel):
@@ -112,7 +121,10 @@ def readMux_2(channel):
                 mos_2c.value = True
         else:
                 mos_2c.value = False
-        return (mos_chan2.value)
+        if voltage:
+                return mos_chan2.voltage
+        else:
+                return mos_chan2.value
     
 # Print all values of photodiodes, just raw values, usually dark is around 65472 and fully lit up is 0
 def printArray():
@@ -127,16 +139,25 @@ def printArray():
 
 # Measure Angle of photodiodes
 def angleMeasure():
-        max = 65472 #initialize_whenDark()
+        if voltage:
+                max = 3.3
+        else:
+                max = 65472 #initialize_whenDark()
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
         offsets = [int(i) for i in offsets.split(",")]
         print(offsets)
         for mos1 in range(8):
-                values[0][mos1] = (max-readMux_1(mos1)-offsets[mos1])/65472*1024 #max[mos1]-readMux_1(mos1)
+                if voltage:
+                        values[0][mos1] = (max-readMux_1(mos1))/max*1024
+                else:
+                        values[0][mos1] = (max-readMux_1(mos1)-offsets[mos1])/max*1024 #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
-                values[0][mos2+8] = (max - readMux_2(mos2)-offsets[mos2+8])/65472*1024 # max[mos2+8] - readMux_2(mos2)
+                if voltage:
+                        values[0][mos2+8] = (max-readMux_2(mos2))/max*1024
+                else:
+                        values[0][mos2+8] = (max - readMux_2(mos2)-offsets[mos2+8])/max*1024 # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
         total_current = 0
