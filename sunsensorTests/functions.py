@@ -126,7 +126,7 @@ def readMux_2(channel):
                 mos_2c.value = True
         else:
                 mos_2c.value = False
-        return readadc(2)
+        return readadc(0)
     
 # Print all values of photodiodes, just raw values, usually dark is around 65472 and fully lit up is 0
 def printArray():
