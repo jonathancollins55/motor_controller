@@ -163,7 +163,6 @@ def initialize_whenDark():
         return max
 
 def calibrate():
-        max = 65472 #initialize_whenDark()
         print("What is the name of this document? Make sure to write <name>.csv")
         docname = input()
 
@@ -179,10 +178,10 @@ def calibrate():
                 # create the csv writer
                 for i in range(10):
                         for mos1 in range(8):
-                                values[0][mos1] = max-readMux_1(mos1) #max[mos1]-readMux_1(mos1)
+                                values[0][mos1] = readMux_1(mos1) #max[mos1]-readMux_1(mos1)
                                 values[1][mos1] = (8-mos1)*(-1)
                         for mos2 in range(8):
-                                values[0][mos2+8] = max - readMux_2(mos2) # max[mos2+8] - readMux_2(mos2)
+                                values[0][mos2+8] = readMux_2(mos2) # max[mos2+8] - readMux_2(mos2)
                                 values[1][mos2+8] = mos2+1
                         full = [step] + values[0][0:15]
                         writer.writerow(full)
