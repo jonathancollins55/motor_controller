@@ -139,7 +139,6 @@ def angleMeasure():
                         distance = distance - (2.54/2)
                 total_current_distance  = total_current_distance + values[0][i]*distance
                 total_current = total_current + values[0][i]
-        print(total_current_distance)
         if total_current == 0:
                 return 0
         else:
@@ -204,6 +203,8 @@ def main():
                         angle = angleMeasure()
                         print(angle)
                         print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+                elif function_name == "calibrate":
+                        calibrate()
                 else:
                         print("If you want to print raw values of the full array, use command:")
                         print("")
@@ -212,6 +213,9 @@ def main():
                         print("If you want to print the values of angles, use command:")
                         print("")
                         print("python functions.py angle")
+                        print("If you want to calibrate, use command:")
+                        print("")
+                        print("python functions.py calibrate")
                         break
                 time.sleep(0.5)
 
