@@ -163,12 +163,12 @@ def angleMeasure_regular():
         max = 65472 #initialize_whenDark()
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
-        offsets = [int(i)*2 for i in offsets.split(",")]
+        offsets = [int(i) for i in offsets.split(",")]
         print(offsets)
         file_offset.close()
         for mos1 in range(8):
                 raw_val = readMux_1(mos1)
-                if raw_val > 64000:
+                if raw_val > 65000:
                         raw_val = 65472
                 else:
                         raw_val = (max-raw_val-offsets[mos1])/max
