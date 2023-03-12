@@ -98,7 +98,7 @@ def readMux_1(channel):
                 mos_1c.value = True
         else:
                 mos_1c.value = False
-        if voltage:
+        if function_name == "angle_v":
                 return mos_chan1.voltage
         else:
                 return mos_chan1.value
@@ -117,7 +117,7 @@ def readMux_2(channel):
                 mos_2c.value = True
         else:
                 mos_2c.value = False
-        if voltage:
+        if function_name == "angle_v":
                 return mos_chan2.voltage
         else:
                 return mos_chan2.value
