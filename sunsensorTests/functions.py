@@ -50,10 +50,15 @@ mos_2c.direction = digitalio.Direction.OUTPUT
 
 height = 10.61
 serial_port = 'COM4'
-if len(sys.argv) == 2:
-        function_name = sys.argv[1] 
+if len(sys.argv) == 3:
+        function_name = sys.argv[1]
+        offset_file = sys.arg[2] 
+elif len(sys.argv) == 2:
+        function_name = sys.argv[1]
+        offset_file = ""
 else:
         function_name = ""
+        offset_file = ""
 # Start all multiplexer outputs to zero
 mos_1a.value = False
 mos_1b.value = False
@@ -123,11 +128,15 @@ def printArray():
 # Measure Angle of photodiodes
 def angleMeasure():
         max = 65472 #initialize_whenDark()
+        file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
+        offsets = file_offset.read()
+        offsets = [int(i) for i in offsets.split(",")]
+        print(offsets)
         for mos1 in range(8):
-                values[0][mos1] = max-readMux_1(mos1) #max[mos1]-readMux_1(mos1)
+                values[0][mos1] = max-readMux_1(mos1)+offsets[mos1] #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
-                values[0][mos2+8] = max - readMux_2(mos2) # max[mos2+8] - readMux_2(mos2)
+                values[0][mos2+8] = max - readMux_2(mos2)+offsets[mos2+8] # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
         total_current = 0

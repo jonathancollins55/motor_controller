@@ -44,12 +44,33 @@ def  readfiles(filenames):
 foldername = "C://Users//grace//Documents//Harvard//Classes//Spring 2023//motor_controller//sunsensorTests//calibrationTests"
 
 
-df = pd.read_csv(foldername+"//sunsensor1.csv")
+df = pd.read_csv(foldername+"//sunsensor3_fullarray.csv")
+
 x_axis = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 
-print(df)
-# df1 = pd.DataFrame(cali_1).T 
-# df1['mean'] = df1.mean(axis=1)
+values = np.zeros(16)
+df2 = pd.DataFrame(df.loc[df['Steps'] == 0])
+df2 = pd.DataFrame(df.loc[df['Steps'] == 1])
+for i in range(4):
+    df2 = pd.DataFrame(df.loc[df['Steps'] == i])
+    mean = np.array(df2.loc[:, df2. columns != "Steps"].mean(axis=0))
+    mean = 65472 - mean
+    min = np.array(df2.loc[:, df2. columns != "Steps"].min(axis=0)) 
+    min = 65472 - min
+    for i in range(16):
+        if values[i]< min[i]:
+            values[i] = min[i]
+    plt.plot(x_axis, mean, color = "blue", alpha = 0.5, linewidth = 0.3 )
+    
+print(max(values)-values) 
+plt.bar(x_axis,values, alpha = 0.3)
+plt.plot(x_axis, mean, color = "blue", alpha = 0.5, linewidth = 0.3 )
+plt.title('Calibration of Photodiodes - No Case')
+plt.xlabel('Photodiode Number')
+plt.ylabel('Intensity of Photodiode')
+plt.xticks(x_axis)
+plt.show()
+
 # df2 = pd.DataFrame(cali_2).T 
 # df2['mean'] = df2.mean(axis=1)
 # df3 = pd.DataFrame(cali_3).T 
