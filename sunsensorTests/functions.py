@@ -50,7 +50,10 @@ mos_2c.direction = digitalio.Direction.OUTPUT
 
 height = 10.61
 serial_port = 'COM4'
-function_name = sys.argv[1] 
+if sys.argv[1]:
+        function_name = sys.argv[1] 
+else:
+        function_name = ""
 # Start all multiplexer outputs to zero
 mos_1a.value = False
 mos_1b.value = False
