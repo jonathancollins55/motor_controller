@@ -10,8 +10,8 @@ import time
 import sys
 import csv
 from math import atan
-print("Interpreter: ", sys.executable)
-print("library path: ", sys.path)
+# print("Interpreter: ", sys.executable)
+# print("library path: ", sys.path)
 import board
 import busio
 import digitalio
@@ -124,10 +124,10 @@ def printArray():
 def angleMeasure():
         max = 65472 #initialize_whenDark()
         for mos1 in range(8):
-                values[0][mos1] = max[mos1]-readMux_1(mos1)
+                values[0][mos1] = max-readMux_1(mos1) #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
-                values[0][mos2+8] = max[mos2+8] - readMux_2(mos2)
+                values[0][mos2+8] = max - readMux_2(mos2) # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
         total_current = 0
