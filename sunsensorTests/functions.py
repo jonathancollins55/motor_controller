@@ -139,7 +139,6 @@ def angleMeasure():
                         distance = distance - (2.54/2)
                 total_current_distance  = total_current_distance + values[0][i]*distance
                 total_current = total_current + values[0][i]
-        print(values[0][0:16])
         print(total_current_distance)
         if total_current == 0:
                 return 0
