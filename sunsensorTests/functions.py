@@ -66,6 +66,10 @@ else:
         function_name = ""
         offset_file = "sensorNoOffsets.csv"
         voltage = False
+
+print(function_name)
+print(offset_file)
+print(voltage)
 # Start all multiplexer outputs to zero
 mos_1a.value = False
 mos_1b.value = False
