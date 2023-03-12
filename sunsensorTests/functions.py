@@ -144,7 +144,6 @@ def angleMeasure_regular():
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
         offsets = [(int(i)/65472)*1023 for i in offsets.split(",")]
-        print(offsets)
         file_offset.close()
         for mos1 in range(8):
                 raw_val = readMux_1(mos1)
@@ -158,6 +157,7 @@ def angleMeasure_regular():
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
         total_current = 0
+        print(values[0][:])
         for i in range(16):
                 distance = (values[1][i]*2.54)
                 if distance < 0:
