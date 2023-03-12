@@ -173,7 +173,7 @@ def calibrate():
         writer = csv.writer(file)
         writer.writerow(header)
         step = 0
-        for i in range(3):
+        for i in range(4):
                 print("When ready to start calibrating, press any button:")
                 input1 = input()
                 # create the csv writer
@@ -205,6 +205,7 @@ def main():
                         print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
                 elif function_name == "calibrate":
                         calibrate()
+                        break
                 else:
                         print("If you want to print raw values of the full array, use command:")
                         print("")
