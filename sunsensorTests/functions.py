@@ -187,6 +187,7 @@ def calibrate():
                         full = [step] + values[0][0:15]
                         writer.writerow(full)
                 step = step + 1
+                time.sleep(0.5)
         file.close();
 
 # Just run any of main functions
