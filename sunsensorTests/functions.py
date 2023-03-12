@@ -172,7 +172,7 @@ def angleMeasure_regular():
         else:
                 normalized_current_distance = (total_current_distance/total_current)
                 angle = atan(normalized_current_distance/(height-3.2))*4068/(71*-1)
-                return angle +17
+                return angle + 12
 
 # Honestly, don't think we need this; from trial and error I got 65472 for max values for most
 def initialize_whenDark():
