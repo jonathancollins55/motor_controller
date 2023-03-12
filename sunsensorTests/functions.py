@@ -50,7 +50,7 @@ mos_2c.direction = digitalio.Direction.OUTPUT
 
 height = 10.61
 serial_port = 'COM4'
-if sys.argv[1]:
+if len(sys.argv) == 2:
         function_name = sys.argv[1] 
 else:
         function_name = ""
