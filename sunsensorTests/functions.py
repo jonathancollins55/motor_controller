@@ -50,26 +50,16 @@ mos_2c.direction = digitalio.Direction.OUTPUT
 
 height = 10.61
 serial_port = 'COM4'
-if len(sys.argv) == 4:
-        function_name = sys.argv[1]
-        offset_file = sys.argv[2] 
-        voltage = sys.argv[3]
 if len(sys.argv) == 3:
         function_name = sys.argv[1]
         offset_file = sys.argv[2] 
-        voltage = False
 elif len(sys.argv) == 2:
         function_name = sys.argv[1]
         offset_file = "sensorNoOffsets.csv"
-        voltage = False
 else:
         function_name = ""
         offset_file = "sensorNoOffsets.csv"
-        voltage = False
 
-print(function_name)
-print(offset_file)
-print(voltage)
 # Start all multiplexer outputs to zero
 mos_1a.value = False
 mos_1b.value = False
@@ -144,26 +134,46 @@ def printArray():
                 print(values[0][i], " //index ", values[1][i])
 
 # Measure Angle of photodiodes
-def angleMeasure():
-        if voltage:
-                max = 3.3
-        else:
-                max = 65472 #initialize_whenDark()
+def angleMeasure_voltage():
+        max = 3.3
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
         offsets = [int(i) for i in offsets.split(",")]
         print(offsets)
         for mos1 in range(8):
-                if voltage:
-                        values[0][mos1] = (max-readMux_1(mos1))/max*1024
-                else:
-                        values[0][mos1] = (max-readMux_1(mos1)-offsets[mos1])/max*1024 #max[mos1]-readMux_1(mos1)
+                values[0][mos1] = (max-readMux_1(mos1))/max*1024
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
-                if voltage:
-                        values[0][mos2+8] = (max-readMux_2(mos2))/max*1024
+                values[0][mos2+8] = (max-readMux_2(mos2))/max*1024
+                values[1][mos2+8] = mos2+1
+        total_current_distance = 0
+        total_current = 0
+        for i in range(16):
+                distance = (values[1][i]*2.54)
+                if distance < 0:
+                        distance = distance + (2.54/2)
                 else:
-                        values[0][mos2+8] = (max - readMux_2(mos2)-offsets[mos2+8])/max*1024 # max[mos2+8] - readMux_2(mos2)
+                        distance = distance - (2.54/2)
+                total_current_distance  = total_current_distance + values[0][i]*distance
+                total_current = total_current + values[0][i]
+        if total_current == 0:
+                return 0
+        else:
+                normalized_current_distance = (total_current_distance/total_current)
+                angle = atan(normalized_current_distance/(height-3.2))*4068/(71*-1)
+                return angle
+
+def angleMeasure_regular():
+        max = 65472 #initialize_whenDark()
+        file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
+        offsets = file_offset.read()
+        offsets = [int(i) for i in offsets.split(",")]
+        print(offsets)
+        for mos1 in range(8):
+                values[0][mos1] = (max-readMux_1(mos1)-offsets[mos1])/max*1024 #max[mos1]-readMux_1(mos1)
+                values[1][mos1] = (8-mos1)*(-1)
+        for mos2 in range(8):
+                values[0][mos2+8] = (max - readMux_2(mos2)-offsets[mos2+8])/max*1024 # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
         total_current = 0
@@ -233,10 +243,16 @@ def main():
                         print("Full Array:")
                         printArray()
                         print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+                elif function_name == "angle_v":               
+                # IF YOU WANT TO PRINT ANGLES
+                        print("Angle:")
+                        angle = angleMeasure_voltage()
+                        print(angle)
+                        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
                 elif function_name == "angle":               
                 # IF YOU WANT TO PRINT ANGLES
                         print("Angle:")
-                        angle = angleMeasure()
+                        angle = angleMeasure_regular()
                         print(angle)
                         print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
                 elif function_name == "calibrate":
@@ -247,9 +263,14 @@ def main():
                         print("")
                         print("python functions.py print")
                         print("")
-                        print("If you want to print the values of angles, use command:")
+                        print("If you want to print the values of angles no voltage, use command:")
                         print("")
                         print("python functions.py angle")
+                        print("")
+                        print("If you want to print the values of angles voltage, use command:")
+                        print("")
+                        print("python functions.py angle_v")
+                        print("")
                         print("If you want to calibrate, use command:")
                         print("")
                         print("python functions.py calibrate")
