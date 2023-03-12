@@ -143,17 +143,17 @@ def angleMeasure_regular():
         max = 1023 #initialize_whenDark()
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
-        offsets = [int(i)/65472 for i in offsets.split(",")]
+        offsets = [(int(i)/65472)*1023 for i in offsets.split(",")]
         print(offsets)
         file_offset.close()
         for mos1 in range(8):
                 raw_val = readMux_1(mos1)
-                raw_val = max-raw_val #(max-raw_val-offsets[mos1])
+                raw_val = max-raw_val-offsets[mos1]
                 values[0][mos1] = raw_val #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
                 raw_val = readMux_2(mos2)
-                raw_val = max-raw_val #(max -raw_val-offsets[mos2+8])/max
+                raw_val = max-raw_val-offsets[mos2+8]
                 values[0][mos2+8] = raw_val # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
