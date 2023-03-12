@@ -10,7 +10,6 @@ import time
 import sys
 import csv
 from math import atan
-import spidev
 # print("Interpreter: ", sys.executable)
 # print("library path: ", sys.path)
 import board
@@ -22,17 +21,14 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 ############################## SETUP PINS ################################
 
 # create the spi bus
-#spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-spi = spidev.SpiDev()
-spi.open(0, 0)
-spi.max_speed_hz=1000000
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 
 # create the mcp object
-#mcp = MCP.MCP3008(spi, 0)
+mcp = MCP.MCP3008(spi, 0)
 
 # Channel 1 and Channel 0 for MCP3008 inputs from multiplexers
-#mos_chan1 = AnalogIn(mcp, MCP.P1)
-#mos_chan2 = AnalogIn(mcp, MCP.P0)
+mos_chan1 = AnalogIn(mcp, MCP.P1)
+mos_chan2 = AnalogIn(mcp, MCP.P0)
 
 # Setup for Digital pin outputs for multiplexer 1
 mos_1a = digitalio.DigitalInOut(board.D17)
@@ -88,14 +84,6 @@ muxChannel = [[1,1,0], # channel 3
 
 ############################## FUNCTIONS ################################
 
-def readadc(adcnum):
-    # read SPI data from the MCP3008, 8 channels in total
-    if adcnum > 7 or adcnum < 0:
-        return -1
-    r = spi.xfer2([1, 8 + adcnum << 4, 0])
-    data = ((r[1] & 3) << 8) + r[2]
-    return data
-
 # Read in inputs only for multiplexer 1
 def readMux_1(channel):
         if muxChannel[channel][0] == 1:
@@ -110,8 +98,11 @@ def readMux_1(channel):
                 mos_1c.value = True
         else:
                 mos_1c.value = False
-        return readadc(1)
-        
+        if function_name == "angle_v":
+                return mos_chan1.voltage
+        else:
+                return mos_chan1.value
+    
 # Read in inputs only for multiplexer 2
 def readMux_2(channel):
         if muxChannel[channel][0] == 1:
@@ -126,7 +117,10 @@ def readMux_2(channel):
                 mos_2c.value = True
         else:
                 mos_2c.value = False
-        return readadc(2)
+        if function_name == "angle_v":
+                return mos_chan2.voltage
+        else:
+                return mos_chan2.value
     
 # Print all values of photodiodes, just raw values, usually dark is around 65472 and fully lit up is 0
 def printArray():
@@ -139,8 +133,34 @@ def printArray():
         for i in range(16):
                 print(values[0][i], " //index ", values[1][i])
 
+# Measure Angle of photodiodes
+def angleMeasure_voltage():
+        max = 3.3
+        for mos1 in range(8):
+                values[0][mos1] = (max-readMux_1(mos1))
+                values[1][mos1] = (8-mos1)*(-1)
+        for mos2 in range(8):
+                values[0][mos2+8] = (max-readMux_2(mos2))
+                values[1][mos2+8] = mos2+1
+        total_current_distance = 0
+        total_current = 0
+        for i in range(16):
+                distance = (values[1][i]*2.54)
+                if distance < 0:
+                        distance = distance + (2.54/2)
+                else:
+                        distance = distance - (2.54/2)
+                total_current_distance  = total_current_distance + values[0][i]*distance
+                total_current = total_current + values[0][i]
+        if total_current == 0:
+                return 0
+        else:
+                normalized_current_distance = (total_current_distance/total_current)
+                angle = atan(normalized_current_distance/(height-3.2))*4068/(71*-1)
+                return angle
+
 def angleMeasure_regular():
-        max = 1023 #initialize_whenDark()
+        max = 65472 #initialize_whenDark()
         file_offset = open('plottingfunctions//'+ str(offset_file), 'r')
         offsets = file_offset.read()
         offsets = [int(i) for i in offsets.split(",")]
@@ -148,12 +168,18 @@ def angleMeasure_regular():
         file_offset.close()
         for mos1 in range(8):
                 raw_val = readMux_1(mos1)
-                raw_val = (max-raw_val-offsets[mos1])
+                if raw_val > 65000:
+                        raw_val = 65472
+                else:
+                        raw_val = (max-raw_val-offsets[mos1])/max
                 values[0][mos1] = raw_val #max[mos1]-readMux_1(mos1)
                 values[1][mos1] = (8-mos1)*(-1)
         for mos2 in range(8):
-                raw_val = readMux_2(mos2)
-                raw_val = (max -raw_val-offsets[mos2+8])/max
+                raw_val = readMux_1(mos1)
+                if raw_val > 64000:
+                        raw_val = 65472
+                else:
+                        raw_val = (max - readMux_2(mos2)-offsets[mos2+8])/max
                 values[0][mos2+8] = raw_val # max[mos2+8] - readMux_2(mos2)
                 values[1][mos2+8] = mos2+1
         total_current_distance = 0
