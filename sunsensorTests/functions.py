@@ -169,7 +169,7 @@ def calibrate():
 
         # steps is left to right, 1-4
         header = ["Steps", "p_-8","p_-7","p_-6","p_-5","p_-4","p_-3","p_-2","p_-1","p_1","p_2","p_3","p_4","p_5","p_6","p_7","p_8"]
-        file = open('calibrationData//'+ str(docname), 'w', newline='')
+        file = open('calibrationTests//'+ str(docname), 'w', newline='')
         writer = csv.writer(file)
         writer.writerow(header)
         step = 0
