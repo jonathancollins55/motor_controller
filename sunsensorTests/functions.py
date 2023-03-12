@@ -55,10 +55,10 @@ if len(sys.argv) == 3:
         offset_file = sys.arg[2] 
 elif len(sys.argv) == 2:
         function_name = sys.argv[1]
-        offset_file = ""
+        offset_file = "sensorNoOffsets.csv"
 else:
         function_name = ""
-        offset_file = ""
+        offset_file = "sensorNoOffsets.csv"
 # Start all multiplexer outputs to zero
 mos_1a.value = False
 mos_1b.value = False
