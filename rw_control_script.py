@@ -39,7 +39,7 @@ def main():
     print("Starting control")
     time.sleep(3)
 
-    controller = RW_Controller(KP,KI,KD,target_position,E_MAX,bno)
+    controller = RW_Controller.RW_Controller(KP,KI,KD,E_MAX,bno)
 
     while(True):
         try:
