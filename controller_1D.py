@@ -1,4 +1,3 @@
-#In this file I need to build a black box controller for one axis, so that if I give it an angle to turn to, it will slew to that angle
 from Adafruit_BNO055 import BNO055
 import Adafruit_GPIO.I2C as I2C
 import lgpio
@@ -13,24 +12,18 @@ KP = 1/360000
 KI = 0
 KD = 0
 
-PREVT = 0
-EPREV = 0
-EINTEGRAL = 0
-PWM_PREV = 7
+PWM_START = 7.5
 
 ###################################
 # Other Variables
 ###################################
 AXIS = 0                #Axis to slew on
 TARGET_POSITION = 90    #relative target position (in degrees clockwise)
-AXIS_REMAP_X = 0x00
-AXIS_REMAP_Y = 0x01
-AXIS_REMAP_Z = 0x02
 
 MOTOR = 12
 FREQ = 50
 MAX_SIGNAL = 10
-SIGNAL_STOP = 7.5
+STOP_SIGNAL = 7.5
 MIN_SIGNAL = 5
 STEP_SIZE = .001
 
@@ -40,8 +33,6 @@ STEP_SIZE = .001
 # Outputs: None
 ##########################################
 def main():
-    current_position = 0
-
     motor, bno = setup()
     target_position = get_target_position(bno=bno)
 
@@ -54,14 +45,19 @@ def main():
     error_data = [[],[]]        #Error
     io_data = [[],[],[]]        #FOR SYSTEM ANALYZER
     gyro_data = [[],[],[],[]]   #For analyzing relationship with pwm signal
-    TIME_START = time.time()    
+    TIME_START = time.time()   
+
+    current_position = 0
+    prevT = time.time_ns()
+    pwm_prev = PWM_START
+    e_integral = 0
+    e_prev = 0
 
     while(True):
-        prevT = 0
         try:
             #time difference
             currT = time.time_ns()
-            deltaT = currT-prevT/1.0e9  #CHANGE 1nS TO TIME DELAY USED BELOW
+            deltaT = (currT-prevT)/10**9
             prevT = currT
 
             #error
@@ -71,16 +67,16 @@ def main():
             #gyro vals
             gyro = bno.read_gyroscope()
 
-            dedt = (e-EPREV)/deltaT
-            #eint = EINTEGRAL + e*deltaT
+            dedt = (e-e_prev)/deltaT
+            e_integral = e_integral + e*deltaT
 
             #Calculate control signal
             if (e < 1.5):
                 u = 0
-                pwm = PWM_PREV
+                pwm = pwm_prev
             else:
-                u = KP*e + KD*dedt + KI*eintegral
-                pwm = PWM_PREV - u
+                u = KP*e
+                pwm = pwm_prev - u
 
             #Bound control output
             if (pwm > 10): pwm = MAX_SIGNAL
@@ -103,10 +99,9 @@ def main():
 
             print("Error:",e,"Control_Signal:",pwm)
             #print("Gyroscope value", bno.read_gyroscope()[axis])
-            set_motor(motor,pwm)    #Put in await function. Continuously monitor error and change PID vals, but slowly change PWM
-            #time.sleep(1)
-            PWM_PREV = pwm
-            #EINTEGRAL = EINTEGRAL + eint
+            set_motor(motor,pwm)
+            pwm_prev = pwm
+            e_prev = e
 
         except KeyboardInterrupt:
             print()
@@ -207,7 +202,7 @@ def stop_motor(self):
 ##########################################
 def arm(self):
     print("Sending minimum output")
-    lgpio.tx_pwm(self, MOTOR, FREQ, MIN_SIGNAL)
+    lgpio.tx_pwm(self, MOTOR, FREQ, STOP_SIGNAL)
     turn_on_power = input("Turn on power source and press any key")
     time.sleep(3)
 
