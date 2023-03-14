@@ -16,6 +16,7 @@ KD = 0
 ###################################
 AXIS = 0                #Axis to slew on
 TARGET_POSITION = 90    #relative target position (in degrees clockwise)
+E_MAX = 1.5             #Maximum tolerable steady-state error
 
 MOTOR = 12
 FREQ = 50
@@ -38,12 +39,12 @@ def main():
     print("Starting control")
     time.sleep(3)
 
-    controller = RW_Controller(KP,KI,KD,target_position,bno)
+    controller = RW_Controller(KP,KI,KD,target_position,E_MAX,bno)
 
     while(True):
         try:
             #Get PWM signal
-            pwm = controller.control()
+            pwm = controller.control(target_position)
             set_motor(motor,pwm)
 
         except KeyboardInterrupt:

@@ -21,7 +21,7 @@ class RW_Controller:
     # Inputs: self, kp, ki, kd, bno_imu
     # Outputs: None
     ##########################################
-    def __init__(self, kp, ki, kd, bno_imu) -> None:
+    def __init__(self, kp, ki, kd, e_max, bno_imu) -> None:
         self.kp = kp
         self.ki = ki
         self.kd = kd
@@ -32,6 +32,7 @@ class RW_Controller:
         self.time_start = time.time()
         self.eprev = 0
         self.e_integral = 0
+        self.e_max = e_max
         self.pwm_prev = self.STOP_SIGNAL
         self.error_data = [[],[]]
         self.io_data = [[],[],[]]
@@ -69,7 +70,7 @@ class RW_Controller:
         print("isClockwise:",turnClockwise)
 
         #Calculate control signal
-        if (e < 1.5):
+        if (e < self.e_max):
             u = 0
             pwm = self.pwm_prev
         else:
