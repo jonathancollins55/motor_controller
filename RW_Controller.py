@@ -109,8 +109,8 @@ class RW_Controller:
     # Inputs: BNO055 sensor
     # Outputs: position on specified axis
     ##########################################
-    def get_position(bno):
-        return bno.read_euler()[RW_Controller.AXIS]
+    def get_position(self, bno):
+        return bno.read_euler()[self.AXIS]
     
     ########################################## 
     # Returns IO data of controller as CSV

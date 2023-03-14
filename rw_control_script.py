@@ -41,6 +41,8 @@ def main():
 
     controller = RW_Controller.RW_Controller(KP,KI,KD,E_MAX,bno)
 
+    controller.jot_and_plot()
+
     while(True):
         try:
             #Get PWM signal
