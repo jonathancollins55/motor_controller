@@ -150,7 +150,7 @@ class RW_Controller:
     # Inputs: data (list or array), filename (string)
     # Outputs: None
     ##########################################
-    def data_to_csv(data,filename):
+    def data_to_csv(self,data,filename):
         file = open(filename, 'w+', newline ='')            
         with file:   
             write = csv.writer(file)
@@ -162,7 +162,7 @@ class RW_Controller:
     # Inputs: x-data (array or list), y-data (array or list), x_label (string), y_label (string), filename (string)
     # Outputs: None
     ##########################################
-    def generate_plot(x,y,x_label,y_label,filename,y2=None,y3=None):
+    def generate_plot(self,x,y,x_label,y_label,filename,y2=None,y3=None):
         plt.plot(x,y)
         plt.xlabel(x_label)
         plt.ylabel(y_label)
