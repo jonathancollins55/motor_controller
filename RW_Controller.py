@@ -86,6 +86,9 @@ class RW_Controller:
         print("Control signal is:", u)
         print("PWM is:", pwm)
 
+        #Update previous PWM
+        self.pwm_prev = pwm
+
         #Bound control output
         if (pwm > 10): pwm = self.MAX_SIGNAL
         if (pwm < 5): pwm = self.MIN_SIGNAL
