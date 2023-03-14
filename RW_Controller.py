@@ -54,8 +54,13 @@ class RW_Controller:
         e = target_angle -self.curr_pos
 
         #Calculate integral and derivative of error
-        dedt = (e-self.eprev)/deltaT
-        e_integral = self.e_integral + e*deltaT
+        try:
+            dedt = (e-self.eprev)/deltaT
+            e_integral = self.e_integral + e*deltaT
+        except:
+            print("Divide by zero error")
+            dedt = 0
+            e_integral = self.e_integral + e*deltaT
 
         print("e:", e)
         print("dedt:", dedt)
