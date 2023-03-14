@@ -71,7 +71,7 @@ class RW_Controller:
         self.e_integral = e_integral
 
         #Determine turning direction
-        turnClockwise = self.isClockwise(target_angle,e)
+        turnClockwise = self.isClockwise(e)
         print("isClockwise:",turnClockwise)
 
         #Calculate control signal
