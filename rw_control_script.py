@@ -7,7 +7,7 @@ import RW_Controller
 ###################################
 # Variables - Controller
 ###################################
-KP = 1/36000
+KP = 1/100
 KI = 0
 KD = 0
 
@@ -48,6 +48,7 @@ def main():
             #Get PWM signal
             pwm = controller.control(target_position)
             set_motor(motor,pwm)
+            time.sleep(.5)
 
         except KeyboardInterrupt:
             print()
