@@ -43,6 +43,8 @@ class RW_Controller:
     # Outputs: PWM signal to send to ESC
     ##########################################
     def control(self, target_angle):
+        time.sleep(.2)
+
         #Time difference
         self.currT = time.time_ns()
         if (self.prevT == 0): deltaT = 0
