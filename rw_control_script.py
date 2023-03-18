@@ -53,7 +53,6 @@ def main():
         except KeyboardInterrupt:
             print()
             print("Terminating Program...")
-            time.sleep(1)
             stop_motor(motor)
 
             controller.jot_and_plot()
@@ -99,10 +98,11 @@ def setup():
     file.close()
 
     print("Successfully automated calibration!!")
-    time.sleep(1)
 
     h = lgpio.gpiochip_open(0)
     arm(h)
+    print("Completing arming procedure...")
+    time.sleep(7)
 
     return h, bno
 
@@ -127,8 +127,6 @@ def arm(self):
     print("Sending minimum output")
     lgpio.tx_pwm(self, MOTOR, FREQ, STOP_SIGNAL)
     turn_on_power = input("Turn on power source and press any key")
-    time.sleep(3)
-
     print("Finished Arming")
 
 ########################################## 

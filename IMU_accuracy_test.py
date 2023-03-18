@@ -19,7 +19,7 @@ def main():
     tare_zero = bno.read_euler()[0]
     tare_zero_q = bno.read_quaternion()
 
-    for i in range(24):
+    for i in range(2):
         pointing = bno.read_euler()[0]    #Yaw axis
         pointing_quat = bno.read_quaternion()
         angle_from_quat = quat_to_angle(pointing_quat,tare_zero_q)
