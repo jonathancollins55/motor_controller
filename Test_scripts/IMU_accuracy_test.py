@@ -9,17 +9,16 @@ import math
 def main():
     pointing_data = [[],[],[],[]]  #time, real_pointing, measured_pointing
 
-    i2c = I2C
-    bno = BNO055.BNO055(i2c=i2c)
+    bno = setup()
     bno.begin()
     
-    calibrate_sensor(bno)
-    time.sleep(5)
+    #calibrate_sensor(bno)
+    #time.sleep(5)
 
     tare_zero = bno.read_euler()[0]
     tare_zero_q = bno.read_quaternion()
 
-    for i in range(2):
+    for i in range(5):
         pointing = bno.read_euler()[0]    #Yaw axis
         pointing_quat = bno.read_quaternion()
         angle_from_quat = quat_to_angle(pointing_quat,tare_zero_q)
@@ -35,12 +34,26 @@ def main():
         print("Adjusted pointing:", measured_pointing)
         print("Quaternion:",angle_from_quat)
         print("Turn IMU now!")
-        time.sleep(4)
+        time.sleep(5)
         print("Finished turning")
 
     data_to_csv(pointing_data,"IMU_Accuracy_Test.csv")
     generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",pointing_data[2])
     generate_plot(pointing_data[0],pointing_data[2],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test_Q.png",pointing_data[3])
+
+def setup():
+    i2c = I2C
+    bno = BNO055.BNO055(i2c=i2c)
+    bno.begin()
+
+    #Read calibration data from file
+    file = open("calibration_data.txt",'rb')
+    calibration_data = file.read(22)
+    bno.set_calibration(calibration_data)
+    file.close()
+
+    print("Successfully automated calibration!!")
+    return bno
 
 def data_to_csv(data,filename):
     file = open(filename, 'w+', newline ='')            
