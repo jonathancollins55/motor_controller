@@ -19,7 +19,7 @@ def main():
         true_pointing = 10*i
         reset = input("Reset to 0 degrees")
         start_attitude = bno.read_euler()[0]    #0 = Yaw axis
-        prompt_str = "Turn " + true_pointing + " degrees"
+        prompt_str = "Turn " + str(true_pointing) + " degrees"
         turn_now = input(prompt_str)
         end_attitude = bno.read_euler()[0]
 
