@@ -14,28 +14,27 @@ def main():
     
     #calibrate_sensor(bno)
     #time.sleep(5)
-    prev_pointing = 0
-    pointing_start = bno.read_euler()[0]
 
     for i in range(5):
-        measured_pointing = bno.read_euler()[0]    #Yaw axis
-        if (i == 0): pointing = measured_pointing - pointing_start
-        else: pointing = measured_pointing - prev_pointing
+        true_pointing = 10*i
+        reset = input("Reset to 0 degrees")
+        start_attitude = bno.read_euler()[0]    #0 = Yaw axis
+        turn_now = input("Turn",true_pointing,"degrees")
+        end_attitude = bno.read_euler()[0]
 
-        pointing_data[0].append(i)
-        pointing_data[1].append(10*i)
-        pointing_data[2].append(pointing)
+        turn_degrees = start_attitude - end_attitude
+
+        error = true_pointing - turn_degrees
+
+        pointing_data[0].append(10*i)
+        pointing_data[1].append(error)
         
         print("True pointing:",10*i)
-        print("Adjusted pointing:", pointing)
-        print("Measured pointing:", measured_pointing)
-        print("Turn IMU now!")
-        time.sleep(7)
+        print("Error:", error)
         print("Finished turning")
-        prev_pointing = pointing
 
-    data_to_csv(pointing_data,"IMU_Accuracy_Test.csv")
-    generate_plot(pointing_data[0],pointing_data[1],"Time (Normalized)","Pointing Angle (in degreess)","IMU_Accuracy_Test.png",pointing_data[2])
+    data_to_csv(pointing_data,"IMU_Pointing_Test.csv")
+    generate_plot(pointing_data[0],pointing_data[1],"Turning Degree","Error","IMU_Pointing_Test.png",pointing_data[2])
 
 def setup():
     i2c = I2C
@@ -59,7 +58,7 @@ def data_to_csv(data,filename):
     file.close()
 
 def generate_plot(x,y,x_label,y_label,filename,y2=None,y3=None):
-    plt.plot(x,y)
+    plt.plot(x,y,'bo')
     plt.xlabel(x_label)
     plt.ylabel(y_label)
 
