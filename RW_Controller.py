@@ -155,6 +155,14 @@ class RW_Controller:
     def plot_IO(self):
         self.generate_plot(self.io_data[1],self.io_data[2],"Input (duty cycle)","Position (in degrees)","io.png")
 
+    ########################################## 
+    # Plots PWM data as PNG
+    # Inputs: Controller instance
+    # Outputs: PNG file
+    ##########################################
+    def plot_PWM(self):
+        self.generate_plot(self.error_data[0],self.io_data[1],"Time (in seconds)","PWM (duty cycle)","pwm_time.png")
+
 
     ########################################## 
     # Outputs list data to csv file
@@ -194,3 +202,4 @@ class RW_Controller:
         self.get_error_data()
         self.plot_error()
         self.plot_IO()
+        self.plot_PWM()
