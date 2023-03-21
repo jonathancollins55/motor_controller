@@ -35,7 +35,7 @@ def main():
         print("Finished turning")
 
     data_to_csv(pointing_data,"IMU_Pointing_Test.csv")
-    generate_plot(pointing_data[0],pointing_data[1],"Turning Degree","Error","IMU_Pointing_Test.png",pointing_data[2])
+    generate_plot(pointing_data[0],pointing_data[1],"Turning Degree","Error","IMU_Pointing_Test.png")
 
 def setup():
     i2c = I2C
