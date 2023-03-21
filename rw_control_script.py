@@ -15,7 +15,7 @@ KD = 0
 # Other Variables
 ###################################
 AXIS = 0                #Axis to slew on
-TARGET_POSITION = -90    #relative target position (in degrees clockwise)
+TARGET_POSITION = -45    #relative target position (in degrees clockwise)
 E_MAX = 1.5             #Maximum tolerable steady-state error
 
 MOTOR = 12
