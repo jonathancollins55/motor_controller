@@ -74,8 +74,11 @@ class RW_Controller:
         turnClockwise = self.isClockwise(e)
         print("isClockwise:",turnClockwise)
 
+        mag_e = np.abs(e)
+        mag_emax = np.abs(self.e_max)
+
         #Calculate control signal
-        if (e < self.e_max):
+        if (mag_e < mag_emax):
             u = 0
             pwm = self.pwm_prev
         else:
