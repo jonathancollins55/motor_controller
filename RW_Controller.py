@@ -85,8 +85,8 @@ class RW_Controller:
             u = 0
             pwm = self.pwm_prev
         else:
-            u = self.kp*e
-            # u = self.kp*e + self.ki*self.e_integral + self.kd*dedt
+            #u = self.kp*e
+            u = self.kp*e + self.ki*self.e_integral + self.kd*dedt
             pwm = self.pwm_prev + turnClockwise*u
 
         print("Control signal is:", u)
