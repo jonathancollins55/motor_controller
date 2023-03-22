@@ -52,7 +52,9 @@ class RW_Controller:
 
         #error
         self.curr_pos = self.get_position(self.bno_imu)
-        e = target_angle -self.curr_pos
+        e = target_angle - self.curr_pos
+        if (e > 180):
+            e = 360-np.abs(e)
 
         #Calculate integral and derivative of error
         try:
