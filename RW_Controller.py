@@ -36,6 +36,7 @@ class RW_Controller:
         self.pwm_prev = self.STOP_SIGNAL
         self.error_data = [[],[]]
         self.io_data = [[],[],[]]
+        self.isclockwise = None
 
     ########################################## 
     # Single Control instance. Calculates control input
@@ -108,12 +109,31 @@ class RW_Controller:
 
         return pwm
     
+    ########################################## 
+    # Determines direction of turning for control() function
+    # Inputs: self, error
+    # Outputs: [1,-1]
+    ########################################## 
     def isClockwise(self, e):
-        e_mag = np.abs(e)
-        if((e >= 0 and e_mag <= 180) or (e < 0 and e_mag > 180)):
-            return -1   #Clockwise turn
+        if (self.isclockwise == None):
+            e_mag = np.abs(e)
+            if((e >= 0 and e_mag <= 180) or (e < 0 and e_mag > 180)):
+                self.isclockwise = True
+                return -1   #Clockwise turn
+            else:
+                self.isclockwise = False
+                return 1    #CCW turn
         else:
-            return 1    #CCW turn
+            if (self.isclockwise): return -1
+            else: return 1
+
+    ########################################## 
+    # Resets the turning direction next time control() is called
+    # Inputs: self
+    # Outputs: None
+    ########################################## 
+    def resetTurn(self):
+        self.isclockwise = None
 
     ########################################## 
     # Returns current position of sensor
